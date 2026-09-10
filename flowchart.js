@@ -133,7 +133,7 @@ export const FLOWCHART = {
     html: '<p>Can the need be met right now, even partially?</p>',
     answers: [
       { label: 'Yes!', color: 'green', next: 'dbt-skills' },
-      { label: 'Need can’t be met (see page 2)', color: 'pink', next: 'other-reasons' },
+      { label: 'Need can’t be met', color: 'pink', next: 'other-reasons' },
     ],
   },
   'need-met-physical': {
@@ -141,7 +141,7 @@ export const FLOWCHART = {
     html: '<p>Can the need be met right now, even partially?</p>',
     answers: [
       { label: 'Yes!', color: 'green', next: 'attend' },
-      { label: 'Need can’t be met (see page 2)', color: 'pink', next: 'other-reasons' },
+      { label: 'Need can’t be met', color: 'pink', next: 'other-reasons' },
     ],
   },
   'prioritize': {

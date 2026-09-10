@@ -79,6 +79,21 @@ test('style.css styles exactly the kinds and colors in the vocabularies', () => 
   assert.deepEqual(classes('color'), [...COLORS].sort());
 });
 
+test('star and hooray cards wear a burst of a handful of spikes, not a tiled zigzag', () => {
+  // Replicata: open a long star such as radical-acceptance.
+  // Expectata: a starburst like the flowchart, a handful of large spikes.
+  // Resultata: 18px triangles tiled around the rectangle, reading as a coupon.
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  const burst = css.match(/\.kind-star::before,\s*\.kind-hooray::before\s*\{([^}]*)\}/);
+  assert.ok(burst !== null, 'style.css has no shared ::before rule for star and hooray cards');
+  assert.doesNotMatch(burst[1], /repeat-x|repeat-y/, 'spikes are tiled along the edge');
+  const poly = burst[1].match(/clip-path:\s*polygon\(\s*([\d.%\s,]+)\s*\)/);
+  assert.ok(poly !== null, 'the halo is not a clip-path polygon');
+  const points = poly[1].split(',').map(s => s.trim()).filter(Boolean);
+  assert.ok(points.length >= 16 && points.length <= 24,
+    `burst has ${points.length} points; an 8–12 spike star has 16–24`);
+});
+
 test('the continue button is the only chrome-colored answer and vice versa', () => {
   for (const a of allAnswers) assert.equal(a.label === CONTINUE_LABEL, a.color === 'chrome', `${a.id}: ${a.label}`);
 });

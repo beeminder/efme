@@ -186,29 +186,66 @@ body {
 .kind-star { --edge: #c3b4ff; --edge-dark: #8f73f0; --paper: #f4f0ff; }
 .kind-hooray { --edge: #ffb12e; --edge-dark: #e8781a; --paper: #fff5d8; }
 
-/* Starburst behind star cards, echoing the flowchart's spiky instruction
-   boxes. Four strips of triangles, one per edge, plus the card-sized middle,
-   unioned as mask layers. Each spike is --spike deep and twice that wide in
-   real pixels, so every spike is the same size whatever the card's size;
-   --spike stays under the stage's side padding so none reaches the edge of a
-   phone screen. Each conic gradient is a 90-degree wedge whose point sits on
-   the tile edge nearest the card, so the triangles point outward. */
+/* Starburst for star cards, echoing the flowchart's spiky instruction boxes.
+   The card is a square so the 12 spikes stay spikes: a percentage clip on a
+   tall rectangle stretched into a diamond, and tiling the same small triangle
+   around a rounded rect read as a coupon. The paper is taken out of flow so
+   a long paragraph cannot lengthen the square. Inner radius 0.78 leaves a
+   body wide enough for the longest star copy. 1.1rem of spike stays under
+   the stage's side padding so none reaches the edge of a phone screen. */
+.kind-star, .kind-hooray {
+  width: 100%;
+  max-width: 28rem;
+  aspect-ratio: 1;
+  margin: 1.6rem auto;
+}
+.kind-star .paper, .kind-hooray .paper {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18%;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
 .kind-star::before, .kind-hooray::before {
-  --spike: 18px;
-  --along: calc(var(--spike) * 2);
-  content: ''; position: absolute; inset: calc(var(--spike) * -1); z-index: -1;
-  --mask:
-    conic-gradient(from 135deg at top, #000 0 90deg, #0000 0) top center / var(--along) var(--spike) repeat-x,
-    conic-gradient(from -45deg at bottom, #000 0 90deg, #0000 0) bottom center / var(--along) var(--spike) repeat-x,
-    conic-gradient(from 45deg at left, #000 0 90deg, #0000 0) left center / var(--spike) var(--along) repeat-y,
-    conic-gradient(from -135deg at right, #000 0 90deg, #0000 0) right center / var(--spike) var(--along) repeat-y,
-    linear-gradient(#000 0 0) center / calc(100% - var(--spike) * 2) calc(100% - var(--spike) * 2) no-repeat;
-  -webkit-mask: var(--mask);
-  mask: var(--mask);
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -1.1rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 30%), var(--paper);
+  clip-path: polygon(
+    50.00% 0.00%,
+    60.09% 12.33%,
+    75.00% 6.70%,
+    77.58% 22.42%,
+    93.30% 25.00%,
+    87.67% 39.91%,
+    100.00% 50.00%,
+    87.67% 60.09%,
+    93.30% 75.00%,
+    77.58% 77.58%,
+    75.00% 93.30%,
+    60.09% 87.67%,
+    50.00% 100.00%,
+    39.91% 87.67%,
+    25.00% 93.30%,
+    22.42% 77.58%,
+    6.70% 75.00%,
+    12.33% 60.09%,
+    0.00% 50.00%,
+    12.33% 39.91%,
+    6.70% 25.00%,
+    22.42% 22.42%,
+    25.00% 6.70%,
+    39.91% 12.33%
+  );
+  filter: drop-shadow(0 10px 0 var(--edge-dark)) drop-shadow(0 22px 36px rgba(60, 20, 90, .28));
   animation: breathe 2.6s ease-in-out infinite alternate;
 }
-.kind-star::before { background: linear-gradient(160deg, #e9e0ff 0%, #b9a4ff 100%); }
-.kind-hooray::before { background: linear-gradient(160deg, #ffe08a 0%, #ff8a2e 100%); animation-duration: .9s; }
+.kind-hooray::before { animation-duration: .9s; }
 @keyframes breathe { from { scale: 1; } to { scale: 1.02; } }
 
 .card p {
@@ -271,8 +308,12 @@ body {
   text-underline-offset: 3px;
   border-radius: 4px;
 }
+.kind-star a { white-space: nowrap; }
 .card a:hover { color: var(--berry); text-decoration-thickness: 3px; }
 .card a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+/* Star cards are a square burst, so a two-word link that wraps leaves the
+   first word hanging on its own line. List cards stay wrap-as-usual. */
+.kind-star a { white-space: nowrap; }
 .card b { font-weight: 900; }
 .card u { text-decoration-color: var(--edge-dark); text-decoration-thickness: 3px; text-underline-offset: 3px; }
 
