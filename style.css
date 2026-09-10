@@ -308,7 +308,6 @@ body {
   text-underline-offset: 3px;
   border-radius: 4px;
 }
-.kind-star a { white-space: nowrap; }
 .card a:hover { color: var(--berry); text-decoration-thickness: 3px; }
 .card a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 /* Star cards are a square burst, so a two-word link that wraps leaves the
