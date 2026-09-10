@@ -28,9 +28,8 @@
 //             "Go to Step N", "Go through the flowchart again", and the bare
 //             arrow out of "Fine."
 //
-// Every string below is copied character for character from the flowchart,
-// including its misspelling ("Accomodate"), its "(see pg 2)" page references,
-// its curly quotes, and its odd spacing ("Look forward :").
+// Every string below was copied character for character from the flowchart,
+// down to the typos (which dreev then fixed with his bare hands).
 
 export const SOURCE_URL = 'https://www.tumblr.com/jackalwedding/774031119836397568/if-you-have-memory-problems-brain-fog-or';
 export const SOURCE_TITLE = 'GETTING STARTED WITH EXECUTIVE DYSFUNCTION';
@@ -64,8 +63,8 @@ export const FLOWCHART = {
     kind: 'step',
     html: '<p><span class="step">3</span>Why are you having trouble getting started?</p>',
     answers: [
-      { label: 'INERTIA: I want to do it but I can’t stop doing something else (see pg 2)', color: 'purple', next: 'interrupt-inertia' },
-      { label: 'IMPULSE CONTROL: I <b>really</b> want to do something else specifically (see pg 2)', color: 'lime', next: 'resist-impulses' },
+      { label: 'INERTIA: I want to do it but I can’t stop doing something else', color: 'purple', next: 'interrupt-inertia' },
+      { label: 'IMPULSE CONTROL: I <b>really</b> want to do something else specifically', color: 'lime', next: 'resist-impulses' },
       { label: 'MOTIVATION: I don’t want to do it', color: 'pink', next: 'ten-minutes' },
       { label: '??? Not sure why', color: 'cream', next: 'mindfulness' },
       { label: 'SENSORY &amp; EMOTIONAL REGULATION<br>I feel bad, upset, gross', color: 'peach', next: 'wellbeing' },
@@ -93,7 +92,7 @@ export const FLOWCHART = {
     kind: 'list',
     html: '<h2>MAKE IT MORE TOLERABLE</h2><ul>'
       + '<li><b>Listen</b> to music or an audiobook</li>'
-      + '<li><b>Accomodate the task</b> to make it less bad</li>'
+      + '<li><b>Accommodate the task</b> to make it less bad</li>'
       + '<li><b>Pretend to be excited</b> about it, <b>find the fun</b></li>'
       + '<li><b>Decide on a reward</b> for after</li>'
       + '<li><b>Change of scenery</b></li>'
@@ -102,7 +101,7 @@ export const FLOWCHART = {
       + '</ul>',
     answers: [
       { label: 'One of those worked!', color: 'green', next: 'hell-yeah' },
-      { label: 'This didn’t help (see pg 2)', color: 'pink', next: 'diy-dopamine' },
+      { label: 'This didn’t help', color: 'pink', next: 'diy-dopamine' },
     ],
   },
   'mindfulness': {
@@ -117,7 +116,7 @@ export const FLOWCHART = {
     kind: 'list',
     html: '<h2>WELLBEING</h2><p>Are your physical &amp; emotional needs met right now?</p>',
     answers: [
-      { label: 'Needs are met! (see pg 2)', color: 'green', next: 'other-reasons' },
+      { label: 'Needs are met!', color: 'green', next: 'other-reasons' },
       { label: 'No, I need something. It’s...', color: 'pink', next: 'need-kind' },
     ],
   },
@@ -245,7 +244,7 @@ export const FLOWCHART = {
       + '<li><b>Create physical distance</b> from the thing</li>'
       + '<li><b>Create a gap.</b> Wait just 5 minutes before acting.</li>'
       + '<li><b>Look back:</b> During those 5 minutes, think about the last time you acted on this impulse. (“Last time I ___, I felt ___ / ____ happened”)</li>'
-      + '<li><b>Look forward :</b> “How will I feel if I follow X impulse?” Answer that question for yourself, as well as “How will I feel if I don’t follow X impulse?” (let there be good feelings about that one too!)</li>'
+      + '<li><b>Look forward:</b> “How will I feel if I follow X impulse?” Answer that question for yourself, as well as “How will I feel if I don’t follow X impulse?” (let there be good feelings about that one too!)</li>'
       + '<li><b>Find an out</b>: add a natural stopping point- drink lots of water so you need to get up to pee, or set a content blocker to start in 15 minutes.</li>'
       + '<li><b>Plan an interruption</b> or ask a friend for help interrupting.</li>'
       + '<li><b>Make it harder</b> to follow impulse- delete apps, hide things, etc.</li>'

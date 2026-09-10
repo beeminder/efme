@@ -63,34 +63,29 @@ body {
   0%, 100% { transform: rotate(-2deg); }
   50% { transform: rotate(2deg) translateY(-5px); }
 }
-/* The footnote marker on the wordmark, and its twin down in the colophon.
-   Both are links: the asterisk jumps to the note, the note's asterisk jumps
-   back. The marker takes its own solid color because the title's letters are
-   a clipped gradient, which would leave a raised asterisk pale and hard to
-   see; it keeps the title's drop shadow, so it still reads as part of the
-   wordmark. It sits on EF, the abbreviation the note spells out, not at the
-   end of the title. position: relative raises it without giving the line
-   extra height. */
+/* The footnote marker on the wordmark. It sits on EF, the abbreviation the
+   note spells out; its twin in the colophon links back up here. Two things it
+   must not do, both of which it once did. It must not inherit the wordmark's
+   weight, because Fredoka at 700 draws the asterisk as a solid six-petal
+   flower and the hard magenta drop shadow then fills the gaps between the
+   petals, doubling it into a smudge; at 500 the arms stay open and the shadow
+   becomes a bevel under them, the way it is under the letters. And it must
+   not move under the pointer, because a mark that grows and rotates on a
+   wordmark that is already bobbing reads as something having gone wrong.
+   The padding is a thumb-sized hit area; the matching negative margin keeps
+   it free of layout. */
 .fn-ref {
-  position: relative;
-  top: -1.45em;              /* up near the top of the capitals */
-  display: inline-block;
-  margin-left: .06em;
-  margin-right: -.1em;       /* the raised star leaves air below it, so the
-                                word space after it looks wider than it is */
-  font-size: .36em;
-  line-height: 0;
+  font-size: .55em;
+  font-weight: 500;
+  vertical-align: super;
   color: var(--grape);
-  -webkit-text-fill-color: currentColor;
   text-decoration: none;
-  transition: transform .18s cubic-bezier(.2, 1.6, .4, 1), color .18s;
+  padding: 0 .5em;
+  margin: 0 -.5em;
 }
-/* The asterisk is a small glyph on a phone, so it carries an invisible round
-   hit area big enough for a thumb. It costs no layout: the marker is already
-   positioned, and nothing else up here is clickable. */
-.fn-ref::after { content: ''; position: absolute; inset: -.7em; border-radius: 50%; }
-.fn-ref:hover { color: var(--berry); transform: rotate(24deg) scale(1.2); }
-.fn-ref:focus-visible { outline: 4px solid var(--ink); outline-offset: 4px; border-radius: 8px; }
+/* Left to the browser this ring is engine-dependent and off-palette; drawn
+   here it traces the hit area, so it also shows how big the target really is. */
+.fn-ref:focus-visible { outline: 3px solid var(--ink); border-radius: 10px; }
 
 .subtitle {
   margin: .7rem auto 0;
