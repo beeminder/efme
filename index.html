@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EF Me: A tool to overcome executive dysfunction</title>
+<meta name="description"        content="Based on a flowchart by jackalwedding on Tumblr.">
+<meta property="og:description" content="Based on a flowchart by jackalwedding on Tumblr.">
+<meta property="og:title" content="EF Me: A tool to overcome (instances of) executive dysfunction">
+<meta property="og:type" content="website">
+<link rel="canonical"       href="https://beeminder.github.io/efme">
+<meta property="og:url"  content="https://beeminder.github.io/efme">
+<meta property="og:image" content="https://beeminder.github.io/efme/preview.png">
+<meta property="og:image:alt" content="Screenshot shows the app's title above the first question of the flowchart, 'Do you know what you need to do?', with three candy-colored answer buttons.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@bmndr">
+<meta name="theme-color" content="#ffb3de">
+<!-- BEGIN ICONS -->
+<link rel="icon" href="favicon.ico">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<!-- END ICONS -->
+<script type="application/ld+json"> {
+"@context": "https://schema.org",
+"@type": "WebSite",
+"name": "EF Me: A tool to overcome (instances of) executive dysfunction",
+"alternateName": ["EF Me"],
+"url": "https://beeminder.github.io/efme",
+"image": "https://beeminder.github.io/efme/preview.png" }
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+  </div>
+
+  <header class="masthead">
+    <h1 class="title">EF<a class="fn-ref" id="ef-ref" href="#ef-note" aria-label="Footnote: what EF stands for"><span aria-hidden="true">*</span></a> Me</h1>
+    <p class="subtitle">A tool to overcome (instances of) executive dysfunction</p>
+  </header>
+
+  <main class="stage" id="stage"></main>
+
+  <nav class="controls">
+    <button class="control" id="back" type="button">Back</button>
+    <button class="control" id="restart" type="button">Start over</button>
+  </nav>
+
+  <footer class="colophon">
+    <p class="footnote" id="ef-note"><a class="fn-back" href="#ef-ref" aria-label="Back to the title">*</a> <span class="gloss">Executive Function</span></p>
+    <p class="credit">
+      <!-- The flowchart this app implements: its title (filled in from
+           flowchart.js) linked to the Tumblr post it was posted in. -->
+      <span class="credit-label">Based on</span>
+      <a id="source-link" target="_blank" rel="noopener"><span id="source-title"></span></a>
+      <span class="credit-by">by jackalwedding on Tumblr</span>
+    </p>
+    <p class="madeby">App-ified by <a href="https://www.beeminder.com" target="_blank" rel="noopener" title="Reminders with a sting. Beeminder can be pretty great for various executive dysfunctions, if we do say so ourselves.">Beeminder</a> ·
+      <a href="sourcery.html" target="_blank" rel="noopener">Sourcery</a></p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

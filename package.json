@@ -1,0 +1,11 @@
+{
+  "name": "efme",
+  "version": "0.1.0",
+  "description": "A tool to overcome executive dysfunction",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "qual": "node --test quals/*.qual.js",
+    "start": "python3 -m http.server 8000"
+  }
+}

@@ -1,0 +1,392 @@
+/* style.css — the candy look. One deliberate bright theme, always light. */
+
+:root {
+  --ink: #2a1a4a;
+  --grape: #4a1fa8;          /* purple ink: links, markers, focus rings */
+  --tangerine: #ffb12e;
+  --raspberry: #e2568f;      /* candy pink, for fills and shadows only */
+  --berry: #78123f;          /* the same pink dark enough to read as text */
+  --lilac: #b9a4ff;
+  --display: 'Fredoka', 'Nunito', sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { margin: 0; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(160deg, #8fe3ff 0%, #ffb3de 48%, #fff0a8 100%);
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 600;
+  color: var(--ink);
+  overflow-x: hidden;
+  padding-bottom: 4rem;
+}
+
+/* ---- floating candy blobs behind everything ---- */
+.bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+.blob {
+  position: absolute; border-radius: 50%; filter: blur(48px); opacity: .55;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+.b1 { width: 45vmax; height: 45vmax; left: -12vmax; top: -12vmax; background: #ff7ad9; }
+.b2 { width: 40vmax; height: 40vmax; right: -14vmax; top: 18vh; background: #ffe45c; animation-delay: -6s; }
+.b3 { width: 38vmax; height: 38vmax; left: 18vw; bottom: -16vmax; background: #6fe1ff; animation-delay: -12s; }
+.b4 { width: 26vmax; height: 26vmax; right: 12vw; bottom: 4vh; background: #b08cff; animation-delay: -3s; }
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(6vw, -5vh) scale(1.15); }
+}
+
+/* ---- masthead ---- */
+.masthead { text-align: center; padding: 2rem 1rem 0; }
+.title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(3.4rem, 11vw, 5.8rem);
+  line-height: 1;
+  margin: 0;
+  letter-spacing: -.02em;
+  background: linear-gradient(180deg, #fff9b0 0%, #ffb12e 46%, #ff4fa3 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 0 #b3186a) drop-shadow(0 10px 16px rgba(120, 0, 80, .35));
+  animation: bob 3.2s ease-in-out infinite;
+  display: block;
+  width: max-content;
+  margin-inline: auto;
+}
+@keyframes bob {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg) translateY(-5px); }
+}
+/* The footnote marker on the wordmark, and its twin down in the colophon.
+   Both are links: the asterisk jumps to the note, the note's asterisk jumps
+   back. The marker takes its own solid color because the title's letters are
+   a clipped gradient, which would leave a raised asterisk pale and hard to
+   see; it keeps the title's drop shadow, so it still reads as part of the
+   wordmark. It sits on EF, the abbreviation the note spells out, not at the
+   end of the title. position: relative raises it without giving the line
+   extra height. */
+.fn-ref {
+  position: relative;
+  top: -1.45em;              /* up near the top of the capitals */
+  display: inline-block;
+  margin-left: .06em;
+  margin-right: -.1em;       /* the raised star leaves air below it, so the
+                                word space after it looks wider than it is */
+  font-size: .36em;
+  line-height: 0;
+  color: var(--grape);
+  -webkit-text-fill-color: currentColor;
+  text-decoration: none;
+  transition: transform .18s cubic-bezier(.2, 1.6, .4, 1), color .18s;
+}
+/* The asterisk is a small glyph on a phone, so it carries an invisible round
+   hit area big enough for a thumb. It costs no layout: the marker is already
+   positioned, and nothing else up here is clickable. */
+.fn-ref::after { content: ''; position: absolute; inset: -.7em; border-radius: 50%; }
+.fn-ref:hover { color: var(--berry); transform: rotate(24deg) scale(1.2); }
+.fn-ref:focus-visible { outline: 4px solid var(--ink); outline-offset: 4px; border-radius: 8px; }
+
+.subtitle {
+  margin: .7rem auto 0;
+  max-width: 42ch;
+  font-size: clamp(1.05rem, 3.4vw, 1.3rem);
+  font-weight: 800;
+  line-height: 1.25;
+  text-wrap: balance;
+  color: #4b2c7a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .85);
+}
+
+/* ---- footer: the gloss on the title, then who made the flowchart ---- */
+.colophon {
+  margin: 2.6rem auto 0;
+  padding: 0 1rem;
+  max-width: 46rem;
+  text-align: center;
+  font-size: .88rem;
+  line-height: 1.5;
+  color: #3f2a5e;
+}
+/* a candy rule marking off the notes at the foot of the page */
+.colophon::before {
+  content: '';
+  display: block;
+  width: 4.5rem;
+  height: 3px;
+  margin: 0 auto 1.1rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--tangerine), var(--raspberry));
+}
+.colophon p { margin: .3rem 0; }
+.footnote { display: inline-block; padding: .2rem .6rem; border-radius: 999px; }
+.fn-back {
+  color: var(--grape);
+  font-weight: 900;
+  text-decoration: none;
+}
+.fn-back:hover { color: var(--berry); }
+.fn-back:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; border-radius: 6px; }
+/* landing on the note lights it up, so a reader who followed the asterisk can
+   see where they arrived even when the note was already on screen */
+#ef-note:target { animation: highlight 2s ease-out both; }
+@keyframes highlight {
+  0%, 45% { background: #ffe6a0; }
+  100% { background: transparent; }
+}
+.gloss { font-weight: 700; }
+.credit-label { font-weight: 900; color: var(--berry); }
+#source-link {
+  color: inherit;
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-decoration-color: var(--tangerine);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+#source-link:hover { color: var(--grape); }
+#source-link:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; border-radius: 4px; }
+.credit-by { font-weight: 600; }
+.madeby a {
+  color: var(--grape);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.madeby a:hover { color: var(--berry); }
+.madeby a:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; border-radius: 4px; }
+
+/* ---- the card ---- */
+.stage { max-width: 760px; margin: 2.6rem auto 0; padding: 0 1.25rem; }
+
+.card {
+  position: relative;
+  animation: pop .6s cubic-bezier(.2, 1.6, .4, 1) both;
+}
+/* The visible box lives on .paper, a child, so the starburst halo
+   (.card::before, z-index -1) paints behind it rather than over it. */
+.paper {
+  position: relative;
+  padding: 1.7rem 1.9rem;
+  border-radius: 34px;
+  border: 6px solid var(--edge);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 30%), var(--paper);
+  box-shadow: 0 12px 0 var(--edge-dark), 0 26px 44px rgba(60, 20, 90, .28);
+}
+.paper:focus { outline: none; }
+.paper:focus-visible { outline: 4px solid var(--ink); outline-offset: 6px; }
+@keyframes pop {
+  0% { opacity: 0; transform: scale(.55) rotate(-4deg); }
+  60% { opacity: 1; transform: scale(1.06) rotate(1.5deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+.kind-step { --edge: #3fd3ff; --edge-dark: #169fd0; --paper: #e9fbff; }
+.kind-question, .kind-list { --edge: #74b6ff; --edge-dark: #3b86e0; --paper: #edf5ff; }
+.kind-star { --edge: #c3b4ff; --edge-dark: #8f73f0; --paper: #f4f0ff; }
+.kind-hooray { --edge: #ffb12e; --edge-dark: #e8781a; --paper: #fff5d8; }
+
+/* Starburst behind star cards, echoing the flowchart's spiky instruction
+   boxes. Four strips of triangles, one per edge, plus the card-sized middle,
+   unioned as mask layers. Each spike is --spike deep and twice that wide in
+   real pixels, so every spike is the same size whatever the card's size;
+   --spike stays under the stage's side padding so none reaches the edge of a
+   phone screen. Each conic gradient is a 90-degree wedge whose point sits on
+   the tile edge nearest the card, so the triangles point outward. */
+.kind-star::before, .kind-hooray::before {
+  --spike: 18px;
+  --along: calc(var(--spike) * 2);
+  content: ''; position: absolute; inset: calc(var(--spike) * -1); z-index: -1;
+  --mask:
+    conic-gradient(from 135deg at top, #000 0 90deg, #0000 0) top center / var(--along) var(--spike) repeat-x,
+    conic-gradient(from -45deg at bottom, #000 0 90deg, #0000 0) bottom center / var(--along) var(--spike) repeat-x,
+    conic-gradient(from 45deg at left, #000 0 90deg, #0000 0) left center / var(--spike) var(--along) repeat-y,
+    conic-gradient(from -135deg at right, #000 0 90deg, #0000 0) right center / var(--spike) var(--along) repeat-y,
+    linear-gradient(#000 0 0) center / calc(100% - var(--spike) * 2) calc(100% - var(--spike) * 2) no-repeat;
+  -webkit-mask: var(--mask);
+  mask: var(--mask);
+  animation: breathe 2.6s ease-in-out infinite alternate;
+}
+.kind-star::before { background: linear-gradient(160deg, #e9e0ff 0%, #b9a4ff 100%); }
+.kind-hooray::before { background: linear-gradient(160deg, #ffe08a 0%, #ff8a2e 100%); animation-duration: .9s; }
+@keyframes breathe { from { scale: 1; } to { scale: 1.02; } }
+
+.card p {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.35rem, 3.8vw, 1.95rem);
+  font-weight: 900;
+  line-height: 1.28;
+}
+.kind-list p { font-size: clamp(1.2rem, 3.2vw, 1.6rem); }
+/* the flowchart sets its five numbered questions heavier than the rest */
+.kind-question p, .kind-list p { font-weight: 700; }
+.kind-star p { color: #3d2a78; }
+.kind-hooray p {
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 8vw, 3.4rem);
+  line-height: 1.05;
+  background: linear-gradient(180deg, #ff6a2e 0%, #d61e6e 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: wiggle 1.2s ease-in-out infinite;
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2deg) scale(1); }
+  50% { transform: rotate(2deg) scale(1.06); }
+}
+
+.card h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4.5vw, 2rem);
+  letter-spacing: .05em;
+  text-align: center;
+  margin: 0 0 .9rem;
+  color: #2b5fb8;
+  text-decoration: underline solid var(--edge-dark) 3px;
+  text-underline-offset: 7px;
+}
+.card ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .6rem; }
+.card li {
+  position: relative;
+  padding-left: 1.9rem;
+  font-size: clamp(1.02rem, 2.6vw, 1.15rem);
+  line-height: 1.38;
+}
+.card li::before {
+  content: ''; position: absolute; left: .15rem; top: .38em;
+  width: 1rem; height: 1rem; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0%, var(--dot) 45%, var(--dot-dark) 100%);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .18);
+}
+.card li:nth-child(4n+1) { --dot: #ff6fb5; --dot-dark: #c62d78; }
+.card li:nth-child(4n+2) { --dot: #ffb12e; --dot-dark: #d97a0c; }
+.card li:nth-child(4n+3) { --dot: #8ee83f; --dot-dark: #4fa81d; }
+.card li:nth-child(4n+4) { --dot: #6fd0ff; --dot-dark: #2b8fd0; }
+/* Links to the thing a box names. They open in a new tab, so a reader who
+   follows one still has the flowchart where they left it. */
+.card a {
+  color: var(--grape);
+  text-decoration: underline solid currentColor 2px;
+  text-underline-offset: 3px;
+  border-radius: 4px;
+}
+.card a:hover { color: var(--berry); text-decoration-thickness: 3px; }
+.card a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.card b { font-weight: 900; }
+.card u { text-decoration-color: var(--edge-dark); text-decoration-thickness: 3px; text-underline-offset: 3px; }
+
+/* the black numbered circles of the flowchart's five steps */
+.step {
+  position: absolute; top: -1rem; left: -1rem;
+  display: grid; place-items: center;
+  width: 3rem; height: 3rem; border-radius: 50%;
+  font-family: var(--display); font-size: 1.7rem; font-weight: 700; color: #fff;
+  background: radial-gradient(circle at 35% 30%, #7a5cff 0%, #2a1a4a 75%);
+  box-shadow: 0 4px 0 #150a30, 0 8px 14px rgba(20, 0, 50, .35), inset 0 2px 2px rgba(255, 255, 255, .45);
+  animation: bounce-in .7s cubic-bezier(.2, 1.8, .4, 1) .15s both;
+}
+@keyframes bounce-in {
+  from { transform: scale(0) rotate(-90deg); }
+  to { transform: none; }
+}
+
+/* ---- answers ---- */
+.answers { display: grid; gap: .85rem; margin-top: 1.5rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) {
+  .answers { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+}
+
+/* No default for --c/--c-light/--c-dark: an answer whose color has no
+   .color-* rule below renders with no background at all, visibly broken. */
+.answer {
+  font: inherit; font-weight: 800;
+  font-size: 1.08rem; line-height: 1.28;
+  color: var(--ink); text-align: center; cursor: pointer;
+  padding: 1rem 1.35rem;
+  border: 0; border-radius: 999px;
+  background: linear-gradient(180deg, var(--c-light) 0%, var(--c) 58%, var(--c) 100%);
+  box-shadow:
+    0 6px 0 var(--c-dark),
+    0 12px 20px rgba(60, 20, 90, .22),
+    inset 0 -3px 0 rgba(0, 0, 0, .07),
+    inset 0 2px 0 rgba(255, 255, 255, .75);
+  transition: transform .12s, box-shadow .12s, filter .12s;
+  /* the buttons rise one after another, --i (set by app.js) apart */
+  animation: rise .5s cubic-bezier(.2, 1.4, .4, 1) calc(120ms + var(--i) * 70ms) backwards;
+}
+.answer:hover { transform: translateY(-3px) scale(1.02); filter: saturate(1.2); }
+.answer:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--c-dark), 0 4px 8px rgba(60, 20, 90, .2), inset 0 -3px 0 rgba(0, 0, 0, .07);
+}
+.answer:focus-visible { outline: 4px solid var(--ink); outline-offset: 3px; }
+/* While a button waits its turn (backwards fill of this first frame) it is
+   hidden, and a hidden element cannot be clicked, so the second click of a
+   hasty double click lands on nothing instead of skipping a box. Once the
+   rise starts the button is live, so nothing ever feels laggy. */
+@keyframes rise {
+  from { opacity: 0; visibility: hidden; transform: translateY(26px) scale(.88); }
+  to { opacity: 1; visibility: visible; transform: none; }
+}
+
+.color-green { --c: #9cf287; --c-light: #ddffd2; --c-dark: #4dbd38; }
+.color-pink { --c: #ff9fc9; --c-light: #ffd9ea; --c-dark: #e2568f; }
+.color-red { --c: #ff6b7a; --c-light: #ffb8bf; --c-dark: #c42a3d; }
+.color-cream { --c: #fff0a3; --c-light: #fffbe2; --c-dark: #dfbf3f; }
+.color-peach { --c: #ffc6a3; --c-light: #ffe8dc; --c-dark: #ef874f; }
+.color-purple { --c: #ddb8ff; --c-light: #f2e6ff; --c-dark: #a262ff; }
+.color-lime { --c: #e9f781; --c-light: #f8ffc6; --c-dark: #aec22f; }
+.color-gray { --c: #dde2ea; --c-light: #f5f7fa; --c-dark: #96a0b0; }
+.color-chrome { --c: #fff; --c-light: #fff; --c-dark: var(--lilac); color: var(--grape); }
+
+/* ---- back / restart ---- */
+.controls { display: flex; justify-content: center; gap: .8rem; margin: 1.6rem auto 0; padding: 0 1rem; }
+.control {
+  font: inherit; font-weight: 900; font-size: .98rem;
+  color: var(--ink); cursor: pointer;
+  padding: .6rem 1.2rem;
+  border: 3px solid #fff; border-radius: 999px;
+  background: rgba(255, 255, 255, .6);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 0 rgba(120, 60, 160, .25);
+  transition: transform .12s, opacity .12s;
+}
+.control:hover { transform: translateY(-2px); }
+.control:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(120, 60, 160, .25); }
+.control:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.control:focus-visible { outline: 4px solid var(--grape); outline-offset: 2px; }
+
+/* ---- confetti, animated only under the Hell-yeah card ---- */
+.confetti { position: fixed; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; }
+.confetti i {
+  position: absolute; top: -4vh; left: var(--x);
+  width: 12px; height: 20px; border-radius: 3px;
+  background: hsl(var(--hue) 95% 60%);
+  opacity: 0;
+}
+.kind-hooray ~ .confetti i { animation: fall 3s ease-in var(--delay) 2 both; }
+@keyframes fall {
+  0% { opacity: 1; transform: translateY(0) rotate(0); }
+  100% { opacity: .9; transform: translateY(112vh) rotate(var(--spin)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .paper { padding: 1.4rem 1.2rem; }
+  .step { width: 2.5rem; height: 2.5rem; font-size: 1.4rem; }
+}
