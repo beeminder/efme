@@ -97,7 +97,7 @@ export const FLOWCHART = {
       + '<li><b>Decide on a reward</b> for after</li>'
       + '<li><b>Change of scenery</b></li>'
       + '<li><b>Wear the “Scientist Hat”</b> &mdash; they do this task!</li>'
-      + '<li><b><a href="https://health.clevelandclinic.org/body-doubling-for-adhd" target="_blank" rel="noopener">Body double</a></b> with a friend or via <a href="https://blog.beeminder.com/focusmate" target="_blank" rel="noopener">Focusmate</a></li>'
+      + '<li><b><a href="https://health.clevelandclinic.org/body-doubling-for-adhd" title="This just means working side-by-side with someone" target="_blank" rel="noopener">Body double</a></b> with a friend or via <a href="https://blog.beeminder.com/focusmate" title="Beeminder blog post about our Focusmate integration" target="_blank" rel="noopener">Focusmate</a></li>'
       + '</ul>',
     answers: [
       { label: 'One of those worked!', color: 'green', next: 'hell-yeah' },
@@ -147,7 +147,7 @@ export const FLOWCHART = {
   'prioritize': {
     kind: 'list',
     html: '<h2>PRIORITIZE</h2><ul>'
-      + '<li>Use an <a href="https://blog.beeminder.com/rocks/" target="_blank" rel="noopener">important/urgent matrix</a></li>'
+      + '<li>Use an <a href="https://blog.beeminder.com/rocks/" title="Beeminder blog post about the rocks vs pebbles metaphor, with a sidebar about the Eisenhower matrix" target="_blank" rel="noopener">important/urgent matrix</a></li>'
       + '<li>Pick the top 3 things or 1 next thing</li>'
       + '</ul>',
     answers: [
@@ -194,7 +194,7 @@ export const FLOWCHART = {
   },
   'dbt-skills': {
     kind: 'star',
-    html: '<p>Use <a href="https://deconstructingstigma.org/guides/dbt-emotion-regulation" target="_blank" rel="noopener">DBT skills</a>- fit the facts, opposite action, <a href="https://ggia.berkeley.edu/practice/loving_kindness_meditation" target="_blank" rel="noopener">loving kindness</a>. Go to Step 2.</p>',
+    html: "<p>Use DBT skills &mdash; fit the facts, opposite action, loving kindness. [We at Beeminder don’t know what this is. I mean, we know what loving kindness is <i>in general</i>, and apparently DBT is Dialectical Behavioral Therapy, which sounds like a variant of <a href=\"https://blog.beeminder.com/cbt\" title=\"Beeminder blog post about Cognitive Behavioral Therapy\" target=\"_blank\" rel=\"noopener\">CBT</a>, but that’s all we know.] Go to Step 2.</p>",
     answers: [{ ...CONTINUE, next: 'can-start' }],
   },
   'attend': {

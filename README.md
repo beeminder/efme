@@ -22,6 +22,18 @@ and then if you click button 1 you get sent to "Are there other reasons you can'
 and when you click that, another button appears below it:
 > [button4] Fine.
 
+Bug:
+
+1. Know what you need to do? --> Yes
+2. Can you start? --> No
+3. Why are you having trouble getting started? --> Not sure why
+4. MINDFULNESS --> Still don't know
+5. WELLBEING --> No
+6. No, I need something --> EMOTIONAL
+7. Can the need be met? --> Yes
+Unreadable page.
+
+
 Bug in the flowchart itself:
 
 1. Know what you need to do? --> Yes

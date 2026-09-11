@@ -39,6 +39,7 @@ function marked(html) {
     .replace(/<\/(h2|p|li)>/g, '\n')
     .replace(/<[^>]+>/g, '')
     .replace(/&amp;/g, '&')
+    .replace(/&mdash;/g, '—')
     .replace(/\n+/g, '\n')
     .trim();
 }
@@ -103,9 +104,12 @@ test('star and hooray cards wear a burst of a handful of spikes, not a tiled zig
   // the box is square; on a tall box they stretch into a diamond. And since
   // the paper is out of flow, the aspect ratio is also the only thing giving
   // a star card any height at all: without it the card is 448 by 0.
-  const box = css.match(/\.kind-star,\s*\.kind-hooray\s*\{([^}]*)\}/);
-  assert.ok(box !== null, 'star and hooray cards share no sizing rule');
-  assert.match(box[1], /aspect-ratio:\s*1\b/, 'nothing keeps the burst box square');
+  // The square is now a floor rather than a fixed ratio: short cards, which is
+  // most of them, are exactly square, and only a card whose copy will not fit
+  // one grows taller, stretching its spikes rather than losing its words.
+  const floor = css.match(/\.kind-star::after,\s*\.kind-hooray::after\s*\{([^}]*)\}/);
+  assert.ok(floor !== null && /padding-top:\s*100%/.test(floor[1]),
+    'nothing holds the burst box square when its copy is short');
 });
 
 test('star copy is sized by the card it sits in, so it cannot outgrow the burst', () => {
@@ -128,6 +132,29 @@ test('star copy is sized by the card it sits in, so it cannot outgrow the burst'
     // and still capped, so a wide desktop card does not blow the copy up
     assert.match(size[1], /min\(|clamp\(/, `${sel} has no upper bound: ${size[1]}`);
   }
+});
+
+test('a star card is at least a square, and grows when its copy needs more room', () => {
+  // Replicata: add a long aside to a star node, such as the Beeminder note on
+  // the dbt-skills card, and open it on a phone.
+  // Expectata: the whole note, inside the burst.
+  // Resultata (before this qual): the copy ran straight out of the fixed
+  // square, over the answer button, the controls and the footer. Sizing the
+  // type from the card only solves type that is too large; it cannot solve
+  // copy that is simply longer than a square of that size will hold.
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  const box = css.match(/\.kind-star,\s*\.kind-hooray\s*\{([^}]*)\}/);
+  assert.ok(box !== null, 'star and hooray cards share no sizing rule');
+  assert.match(box[1], /display:\s*grid/, 'the card cannot stack a square floor under its copy');
+  const floor = css.match(/\.kind-star::after,\s*\.kind-hooray::after\s*\{([^}]*)\}/);
+  assert.ok(floor !== null, 'there is no square floor holding short cards square');
+  assert.match(floor[1], /padding-top:\s*100%/, 'the floor is not a square');
+  const paper = css.match(/\.kind-star \.paper,\s*\.kind-hooray \.paper\s*\{([^}]*)\}/);
+  assert.ok(paper !== null, 'star papers share no rule');
+  assert.doesNotMatch(paper[1], /position:\s*absolute/,
+    'a paper out of flow cannot lengthen its card, so its copy can only overflow');
+  assert.match(paper[1], /position:\s*relative/,
+    'the paper must stay positioned, or the burst and the floor paint over the copy');
 });
 
 test('the burst does not put a filter on the element it clips, which would erase it', () => {
@@ -197,13 +224,13 @@ test('the continue button appears only where the flowchart draws no answer box',
 // text is always words the flowchart already had, which the golden below
 // enforces by ignoring tags: a link can never add or change a character.
 const EXPECTED_LINKS = {
-  'tolerable': [['Body double', 'https://health.clevelandclinic.org/body-doubling-for-adhd']],
+  'tolerable': [
+    ['Body double', 'https://health.clevelandclinic.org/body-doubling-for-adhd'],
+    ['Focusmate', 'https://blog.beeminder.com/focusmate'],
+  ],
   'prioritize': [['important/urgent matrix', 'https://blog.beeminder.com/rocks/']],
   'break-it-down': [['Goblin Tools', 'https://goblin.tools/ToDo']],
-  'dbt-skills': [
-    ['DBT skills', 'https://deconstructingstigma.org/guides/dbt-emotion-regulation'],
-    ['loving kindness', 'https://ggia.berkeley.edu/practice/loving_kindness_meditation'],
-  ],
+  'dbt-skills': [['CBT', 'https://blog.beeminder.com/cbt']],
   'dbt-willfulness': [['willfulness', 'https://dialecticalbehaviortherapy.com/distress-tolerance/willingness-vs-willfulness/']],
   'radical-acceptance': [['radical acceptance', 'https://dbtselfhelp.com/radical-acceptance-turning-the-mind/']],
   'do-the-task': [['distress tolerance', 'https://www.skylandtrail.org/survive-a-crisis-situation-with-dbt-distress-tolerance-skills/']],
@@ -331,8 +358,8 @@ const EXPECTED = {
       + '**Pretend to be excited** about it, **find the fun**\n'
       + '**Decide on a reward** for after\n'
       + '**Change of scenery**\n'
-      + '**Wear the “Scientist Hat”**- they do this task!\n'
-      + '**Body double** with a friend',
+      + '**Wear the “Scientist Hat”** — they do this task!\n'
+      + '**Body double** with a friend or via Focusmate',
     answers: [
       ['One of those worked!', 'green', 'hell-yeah'],
       ['This didn’t help', 'pink', 'diy-dopamine'],
@@ -436,7 +463,7 @@ const EXPECTED = {
   },
   'dbt-skills': {
     kind: 'star',
-    text: 'Use DBT skills- fit the facts, opposite action, loving kindness. Go to Step 2.',
+    text: 'Use DBT skills — fit the facts, opposite action, loving kindness. [We at Beeminder don’t know what this is. I mean, we know what loving kindness is ~in general~, and apparently DBT is Dialectical Behavioral Therapy, which sounds like a variant of CBT, but that’s all we know.] Go to Step 2.',
     answers: [
       ['OK Go', 'chrome', 'can-start'],
     ],

@@ -204,13 +204,21 @@ body {
    the stage's side padding so none reaches the edge of a phone screen. */
 .kind-star, .kind-hooray {
   max-width: var(--medallion);
-  aspect-ratio: 1;
+  /* Square by preference, taller when the copy will not fit one. The square
+     is a floor, not a fixed size: ::after is an empty grid item in the same
+     cell as the paper whose top padding is 100% of the card's width, so the
+     row is as tall as the wider of the two. A fixed square had nowhere to put
+     a long aside but over the page. */
+  display: grid;
   container-type: inline-size;
   margin: 1.6rem auto;
 }
 .kind-star .paper, .kind-hooray .paper {
-  position: absolute;
-  inset: 0;
+  /* In flow, so long copy lengthens the card instead of escaping it, and
+     positioned, so it paints above both the burst behind it and the square
+     floor sharing its cell. */
+  position: relative;
+  grid-area: 1 / 1;
   display: grid;
   place-items: center;
   padding: 18%;
@@ -256,6 +264,8 @@ body {
   animation: breathe 2.6s ease-in-out infinite alternate;
 }
 .kind-hooray::before { animation-duration: .9s; }
+/* the square floor: empty, invisible, and exactly as tall as the card is wide */
+.kind-star::after, .kind-hooray::after { content: ''; grid-area: 1 / 1; padding-top: 100%; }
 @keyframes breathe { from { scale: 1; } to { scale: 1.02; } }
 
 .card p {
