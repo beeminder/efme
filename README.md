@@ -6,8 +6,7 @@ Original desiderata:
 
 1. Character-by-character fidelity to the flowchart for all UI copy.
 2. A Candy Crush aesthetic -- not anything about the game itself, just in terms of the presentation. The idea is to captivate even the most ADHD-brained person.
-3. Prominently credit the source: https://www.tumblr.com/jackalwedding/774031119836397568/if-you-have-memory-problems-brain-fog-or
-
+3. Prominently credit the source (jackalwedding on Tumblr)
 
 I'm not sure yet if it makes sense to drop the numbered steps.
 Eg, when we hit "Great job! Move to step 2." that could just be "Great Job!" with a button that says:
@@ -22,7 +21,7 @@ and then if you click button 1 you get sent to "Are there other reasons you can'
 and when you click that, another button appears below it:
 > [button4] Fine.
 
-Bug:
+Bug [fixed]:
 
 1. Know what you need to do? --> Yes
 2. Can you start? --> No

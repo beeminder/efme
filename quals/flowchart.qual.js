@@ -291,7 +291,7 @@ test('boxes are one node iff their text and their outgoing arrows both match', (
 });
 
 test('source credit is the tumblr post and the flowchart’s title', () => {
-  assert.equal(SOURCE_URL, 'https://www.tumblr.com/jackalwedding/774031119836397568/if-you-have-memory-problems-brain-fog-or');
+  assert.equal(SOURCE_URL, 'https://www.tumblr.com/jackalwedding/826687364580687872/reblog-by-jackalwedding-1-image');
   assert.equal(SOURCE_TITLE, 'GETTING STARTED WITH EXECUTIVE DYSFUNCTION');
 });
 
