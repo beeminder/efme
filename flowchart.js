@@ -31,7 +31,8 @@
 // Every string below was copied character for character from the flowchart,
 // down to the typos (which dreev then fixed with his bare hands).
 
-export const SOURCE_URL = 'https://www.tumblr.com/jackalwedding/774031119836397568/if-you-have-memory-problems-brain-fog-or';
+//export const SOURCE_URL = 'https://www.tumblr.com/jackalwedding/774031119836397568/if-you-have-memory-problems-brain-fog-or';
+export const SOURCE_URL = 'https://www.tumblr.com/jackalwedding/826687364580687872/reblog-by-jackalwedding-1-image';
 export const SOURCE_TITLE = 'GETTING STARTED WITH EXECUTIVE DYSFUNCTION';
 export const START = 'know';
 
