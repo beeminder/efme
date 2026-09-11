@@ -82,6 +82,31 @@ test('the heading announces as the human’s name, not as the footnote’s label
   assert.equal(shown(/<h1 class="title">([\s\S]*?)<\/h1>/), NAME.replace(TERM, TERM + MARKER));
 });
 
+test('Back is the only control: starting over is a reload or enough Backs', () => {
+  const controls = [...html.matchAll(/<button class="control"[^>]*>([^<]*)<\/button>/g)].map(m => m[1]);
+  assert.deepEqual(controls, ['Back']);
+});
+
+test('the two footnote asterisks are set as the same mark', () => {
+  // Replicata: compare the asterisk on the wordmark with its twin in the note.
+  // Expectata: the same mark in two places.
+  // Resultata: the wordmark's was the display face at weight 500, a rounded
+  // flower, while the note's was the body face at 900, a spiky star.
+  const css = read('style.css');
+  const shared = css.match(/\.fn-ref,\s*\.fn-back\s*\{([^}]*)\}/);
+  assert.ok(shared !== null, 'the two markers share no rule, so they can drift apart');
+  for (const prop of ['font-family', 'font-weight', 'color']) {
+    assert.match(shared[1], new RegExp(`${prop}:`), `the markers do not share a ${prop}`);
+  }
+  for (const sel of ['.fn-ref', '.fn-back']) {
+    const own = css.match(new RegExp(`\\n\\${sel} \\{([^}]*)\\}`));
+    if (own === null) continue;
+    for (const prop of ['font-family', 'font-weight', 'color']) {
+      assert.doesNotMatch(own[1], new RegExp(`${prop}:`), `${sel} overrides the shared ${prop}`);
+    }
+  }
+});
+
 test('the link back up from the note still says what it is for', () => {
   assert.match(tag(/<a class="fn-back"([^>]*)>/), /aria-label="[^"]+"/);
 });

@@ -14,7 +14,6 @@ function $(selector) {
 
 const stage = $('#stage');
 const backButton = $('#back');
-const restartButton = $('#restart');
 
 let state;
 
@@ -62,6 +61,9 @@ function render() {
     answers.append(button);
   });
 
+  // How much copy this card holds. style.css grows a star card with it, so a
+  // long aside gets a bigger starburst rather than a stretched one.
+  stage.style.setProperty('--chars', paper.textContent.trim().length);
   stage.replaceChildren(card, answers, confetti());
   backButton.disabled = atStart(state);
   window.scrollTo({ top: 0 });
@@ -78,7 +80,6 @@ function move(next, how) {
 }
 
 backButton.addEventListener('click', () => move(back(state), 'back').focus());
-restartButton.addEventListener('click', () => move(start(), 'start').focus());
 
 $('#source-link').href = SOURCE_URL;
 $('#source-title').textContent = SOURCE_TITLE;

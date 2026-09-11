@@ -3,7 +3,7 @@
 //
 // Vocabulary:
 //   entry   = one arrival at a box, [when, node id, how]. `how` is 'start'
-//             (a fresh run, from page load or the Start over button),
+//             (a fresh run, which is to say a page load),
 //             'choose' (the user picked an answer) or 'back'.
 //   log     = every entry ever, oldest first. One append-only list is the
 //             whole store: runs, visits per box, and wins are all derived

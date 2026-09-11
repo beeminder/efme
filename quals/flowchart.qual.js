@@ -112,49 +112,53 @@ test('star and hooray cards wear a burst of a handful of spikes, not a tiled zig
     'nothing holds the burst box square when its copy is short');
 });
 
-test('star copy is sized by the card it sits in, so it cannot outgrow the burst', () => {
-  // Replicata: on a 390px phone, set the browser's default font to 32px, the
-  // 200% text-resize threshold, and open the radical-acceptance card.
-  // Expectata: the whole message, inside the star.
-  // Resultata (before this qual): the copy ran 409px below the card, over the
-  // page and under the buttons, because the card is capped by the viewport
-  // while the type was sized from the root font.
+test('a star grows with the amount of copy it holds, instead of stretching', () => {
+  // Replicata: open the dbt-skills card, the one with the long aside, on a
+  // wide screen.
+  // Expectata: a bigger starburst, still square.
+  // Resultata (before this qual): the same-size star stretched to twice its
+  // height, its side points drawn out long and its copy in a narrow ribbon.
+  //
+  // The star's side is proportional to the square root of the character count,
+  // because copy fills area: twice the words wants a star about 1.4 times as
+  // wide. Sizing the copy from the card instead was the thing that made this
+  // impossible, since a bigger star then simply got bigger type and wrapped to
+  // the same number of lines.
   const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
   const box = css.match(/\.kind-star,\s*\.kind-hooray\s*\{([^}]*)\}/);
   assert.ok(box !== null, 'star and hooray cards share no sizing rule');
-  assert.match(box[1], /container-type:\s*inline-size/, 'the card is not a container its copy can be measured against');
-  for (const sel of ['.kind-star p', '.kind-hooray p']) {
-    const rule = css.match(new RegExp(`\\${sel.replace(' ', '\\s+')}\\s*\\{([^}]*)\\}`));
-    assert.ok(rule !== null, `${sel} has no rule`);
-    const size = rule[1].match(/font-size:\s*([^;]+);/);
-    assert.ok(size !== null, `${sel} declares no font-size`);
-    assert.match(size[1], /cq[wibh]/, `${sel} is sized from something other than its card: ${size[1]}`);
-    // and still capped, so a wide desktop card does not blow the copy up
-    assert.match(size[1], /min\(|clamp\(/, `${sel} has no upper bound: ${size[1]}`);
-  }
-});
+  // the last width declared is the one that wins; earlier ones are the
+  // fallback for engines without sqrt()
+  const widths = [...box[1].matchAll(/\n\s*width:\s*([^;]+);/g)].map(m => m[1]);
+  assert.ok(widths.length > 0, 'the star has no width of its own, so it cannot grow with its copy');
+  const width = widths.at(-1);
+  assert.match(width, /sqrt\(/, `the star's width is not a square root of anything: ${width}`);
+  assert.match(width, /var\(--chars/, `the star's width does not depend on how much copy it holds: ${width}`);
+  assert.ok(widths.length > 1, 'no fallback width for an engine without sqrt(), which would leave star cards full width');
 
-test('a star card is at least a square, and grows when its copy needs more room', () => {
-  // Replicata: add a long aside to a star node, such as the Beeminder note on
-  // the dbt-skills card, and open it on a phone.
-  // Expectata: the whole note, inside the burst.
-  // Resultata (before this qual): the copy ran straight out of the fixed
-  // square, over the answer button, the controls and the footer. Sizing the
-  // type from the card only solves type that is too large; it cannot solve
-  // copy that is simply longer than a square of that size will hold.
-  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
-  const box = css.match(/\.kind-star,\s*\.kind-hooray\s*\{([^}]*)\}/);
-  assert.ok(box !== null, 'star and hooray cards share no sizing rule');
-  assert.match(box[1], /display:\s*grid/, 'the card cannot stack a square floor under its copy');
-  const floor = css.match(/\.kind-star::after,\s*\.kind-hooray::after\s*\{([^}]*)\}/);
-  assert.ok(floor !== null, 'there is no square floor holding short cards square');
-  assert.match(floor[1], /padding-top:\s*100%/, 'the floor is not a square');
+  // The copy has to clear the star, not merely the card: a percentage star's
+  // boundary dips to 39% of the box between its points, so the corners of a
+  // text block sitting flush inside the card land out in the valleys.
+  // Replicata: open the dbt-skills card on a phone. Expectata: every letter on
+  // the star. Resultata at 20% inset: 120 pixels of ink out in the gaps.
   const paper = css.match(/\.kind-star \.paper,\s*\.kind-hooray \.paper\s*\{([^}]*)\}/);
   assert.ok(paper !== null, 'star papers share no rule');
-  assert.doesNotMatch(paper[1], /position:\s*absolute/,
-    'a paper out of flow cannot lengthen its card, so its copy can only overflow');
-  assert.match(paper[1], /position:\s*relative/,
-    'the paper must stay positioned, or the burst and the floor paint over the copy');
+  const pad = paper[1].match(/padding:\s*([\d.]+)%/);
+  assert.ok(pad !== null, 'the star’s copy is not inset by a share of the card, so it cannot track the points');
+  assert.ok(Number(pad[1]) >= 21, `star copy is inset ${pad[1]}%, and below 21% it spills into the valleys between points`);
+
+  const app = readFileSync(new URL('../app.js', import.meta.url), 'utf8');
+  assert.match(app, /--chars/, 'nothing counts the copy, so the star has no number to grow by');
+
+  // The copy may be capped by the card, which is what keeps it inside a star
+  // that has stopped growing, but it must not be sized by the card alone: that
+  // was what made a bigger star merely mean bigger type.
+  const copy = css.match(/\.kind-star p,\s*\.kind-hooray p\s*\{([^}]*)\}/);
+  assert.ok(copy !== null, 'star copy has no size rule of its own');
+  const size = copy[1].match(/font-size:\s*([^;]+);/);
+  assert.ok(size !== null, 'star copy declares no font-size');
+  assert.match(size[1], /^min\(/, `star copy must be a cap, not a size taken from the card: ${size[1]}`);
+  assert.match(size[1], /var\(--copy\)/, `star copy does not start from the size every other card uses: ${size[1]}`);
 });
 
 test('the burst does not put a filter on the element it clips, which would erase it', () => {

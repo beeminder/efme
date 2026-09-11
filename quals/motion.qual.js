@@ -69,7 +69,7 @@ test('nothing that sets the page’s width is measured only in the reader’s fo
   const controls = css.match(/\.controls \{([^}]*)\}/);
   assert.ok(controls !== null, 'style.css has no .controls rule');
   assert.match(controls[1], /flex-wrap:\s*wrap/,
-    'the Back and Start over buttons cannot break onto two lines, so at a large font they overflow both edges');
+    'the controls cannot break onto two lines, so at a large font they overflow both edges');
 });
 
 test('the reduced-motion block still turns every animation off', () => {

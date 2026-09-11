@@ -1,7 +1,7 @@
 /* style.css — the candy look. One deliberate bright theme, always light. */
 
 :root {
-  --medallion: 28rem;        /* how wide a star card, and its answers, may get */
+  --medallion: 28rem;        /* the size a star card holding short copy settles at */
   --ink: #2a1a4a;
   --grape: #4a1fa8;          /* purple ink: links, markers, focus rings */
   --tangerine: #ffb12e;
@@ -84,12 +84,15 @@ body {
    wordmark that is already bobbing reads as something having gone wrong.
    The padding is a thumb-sized hit area; the matching negative margin keeps
    it free of layout. */
-.fn-ref {
-  font-size: .55em;
+.fn-ref, .fn-back {
+  font-family: var(--display);
   font-weight: 500;
-  vertical-align: super;
   color: var(--grape);
   text-decoration: none;
+}
+.fn-ref {
+  font-size: .55em;
+  vertical-align: super;
   padding: 0 .5em;
   margin: 0 -.5em;
 }
@@ -134,11 +137,11 @@ body {
 }
 .colophon p { margin: .3rem 0; }
 .footnote { display: inline-block; padding: .2rem .6rem; border-radius: 999px; }
-.fn-back {
-  color: var(--grape);
-  font-weight: 900;
-  text-decoration: none;
-}
+/* The note's mark is drawn at 1.5em so that, against colophon-sized prose,
+   it comes out about the size the one on the wordmark is against the
+   wordmark. Same face, same weight, same arms, so the pair reads as one
+   asterisk used twice. */
+.fn-back { font-size: 1.5em; line-height: 0; }
 /* landing on the note lights it up, so a reader who followed the asterisk can
    see where they arrived even when the note was already on screen. Static, not
    animated: an animated fade is switched off by the reduced-motion block, and
@@ -203,7 +206,14 @@ body {
    body wide enough for the longest star copy. 1.1rem of spike stays under
    the stage's side padding so none reaches the edge of a phone screen. */
 .kind-star, .kind-hooray {
-  max-width: var(--medallion);
+  /* The star grows with the amount of copy it holds, rather than stretching
+     to hold it: copy fills area, so the side of the square goes as the square
+     root of the character count, which app.js counts into --chars. A short
+     instruction keeps the medallion it has always had; the long aside gets a
+     bigger star of the same shape. The first width is for engines without
+     sqrt(), which get the fixed medallion instead. */
+  width: min(100%, var(--medallion));
+  width: clamp(min(100%, var(--medallion)), calc(52px * sqrt(var(--chars, 100))), 100%);
   /* Square by preference, taller when the copy will not fit one. The square
      is a floor, not a fixed size: ::after is an empty grid item in the same
      cell as the paper whose top padding is 100% of the card's width, so the
@@ -221,7 +231,11 @@ body {
   grid-area: 1 / 1;
   display: grid;
   place-items: center;
-  padding: 18%;
+  /* 21% is measured, not chosen: the copy has to stay inside the star, not
+     merely inside the card, and the star's boundary dips to 39% of the box
+     between its points. At 20% the longest card still put 120 pixels of ink
+     out in the valleys between spikes; at 21% none of it does. */
+  padding: 21%;
   border: 0;
   background: none;
   box-shadow: none;
@@ -271,22 +285,24 @@ body {
 .card p {
   margin: 0;
   text-align: center;
-  font-size: clamp(1.35rem, 3.8vw, 1.95rem);
+  --copy: clamp(1.35rem, 3.8vw, 1.95rem);
+  font-size: var(--copy);
   font-weight: 900;
   line-height: 1.28;
 }
 .kind-list p { font-size: clamp(1.2rem, 3.2vw, 1.6rem); }
 /* the flowchart sets its five numbered questions heavier than the rest */
 .kind-question p, .kind-list p { font-weight: 700; }
-/* A star card is a fixed square capped by the viewport, so its copy is sized
-   from the card rather than from the root font: ask for as much as the reader
-   set, take no more than the burst can hold. Sized from the viewport instead,
-   a reader at the 200% text-resize threshold got the message running 409px
-   below the card, over the page and under the buttons. */
-.kind-star p { color: var(--ink); font-size: min(1.95rem, 7.2cqw); }
+.kind-star p { color: var(--ink); }
+/* The copy takes the size every other card's does, unless the star cannot grow
+   any wider, which on a phone it cannot. Then it takes the largest size that
+   still fits: a star of side W holds roughly W over the square root of the
+   character count. Without this cap a reader at a larger browser font pushed
+   the longest card's copy out through the points. */
+.kind-star p, .kind-hooray p { font-size: min(var(--copy), calc(104cqw / sqrt(var(--chars, 100)))); }
 .kind-hooray p {
   font-family: var(--display);
-  font-size: min(3.4rem, 12cqw);
+  --copy: clamp(2.2rem, 8vw, 3.4rem);
   line-height: 1.05;
   background: linear-gradient(180deg, #f05a1e 0%, #d61e6e 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -355,7 +371,7 @@ body {
 .answers { display: grid; gap: .85rem; margin-top: 1.5rem; }
 /* A star card is a fixed-size medallion rather than a full-width card, so the
    answers under it match its width. */
-.kind-star ~ .answers { max-width: var(--medallion); margin-inline: auto; }
+.kind-star ~ .answers { max-width: clamp(min(100%, var(--medallion)), calc(52px * sqrt(var(--chars, 100))), 100%); margin-inline: auto; }
 @media (min-width: 640px) {
   .answers { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 }
@@ -402,7 +418,7 @@ body {
 .color-gray { --c: #dde2ea; --c-light: #f5f7fa; --c-dark: #96a0b0; }
 .color-chrome { --c: #fff; --c-light: #fff; --c-dark: var(--lilac); color: var(--grape); }
 
-/* ---- back / restart ---- */
+/* ---- back ---- */
 /* wrap, because at a large font the two buttons are wider than a narrow
    screen and a centred flex row overflows both edges rather than breaking */
 .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; margin: 1.6rem auto 0; padding: 0 1rem; }
