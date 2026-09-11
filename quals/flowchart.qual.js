@@ -84,14 +84,62 @@ test('star and hooray cards wear a burst of a handful of spikes, not a tiled zig
   // Expectata: a starburst like the flowchart, a handful of large spikes.
   // Resultata: 18px triangles tiled around the rectangle, reading as a coupon.
   const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
-  const burst = css.match(/\.kind-star::before,\s*\.kind-hooray::before\s*\{([^}]*)\}/);
+  // anchored at the start of a line, so the shared fill rule that also lists
+  // these selectors, after .paper, is not mistaken for the burst
+  const burst = css.match(/^\.kind-star::before,\s*\.kind-hooray::before\s*\{([^}]*)\}/m);
   assert.ok(burst !== null, 'style.css has no shared ::before rule for star and hooray cards');
   assert.doesNotMatch(burst[1], /repeat-x|repeat-y/, 'spikes are tiled along the edge');
-  const poly = burst[1].match(/clip-path:\s*polygon\(\s*([\d.%\s,]+)\s*\)/);
+  // the shape is declared once on the card and used by both the burst and the
+  // lip behind it, so follow the custom property to find it
+  assert.match(burst[1], /clip-path:/, 'the burst is not clipped to a shape');
+  const shape = burst[1].match(/clip-path:\s*var\((--[a-z-]+)\)/);
+  const where = shape === null ? burst[1] : css.match(new RegExp(`${shape[1]}:\\s*([\\s\\S]*?);`))[1];
+  const poly = where.match(/polygon\(\s*([\d.%\s,]+)\s*\)/);
   assert.ok(poly !== null, 'the halo is not a clip-path polygon');
   const points = poly[1].split(',').map(s => s.trim()).filter(Boolean);
   assert.ok(points.length >= 16 && points.length <= 24,
     `burst has ${points.length} points; an 8–12 spike star has 16–24`);
+  // The polygon's coordinates are percentages, so they only draw a star while
+  // the box is square; on a tall box they stretch into a diamond. And since
+  // the paper is out of flow, the aspect ratio is also the only thing giving
+  // a star card any height at all: without it the card is 448 by 0.
+  const box = css.match(/\.kind-star,\s*\.kind-hooray\s*\{([^}]*)\}/);
+  assert.ok(box !== null, 'star and hooray cards share no sizing rule');
+  assert.match(box[1], /aspect-ratio:\s*1\b/, 'nothing keeps the burst box square');
+});
+
+test('star copy is sized by the card it sits in, so it cannot outgrow the burst', () => {
+  // Replicata: on a 390px phone, set the browser's default font to 32px, the
+  // 200% text-resize threshold, and open the radical-acceptance card.
+  // Expectata: the whole message, inside the star.
+  // Resultata (before this qual): the copy ran 409px below the card, over the
+  // page and under the buttons, because the card is capped by the viewport
+  // while the type was sized from the root font.
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  const box = css.match(/\.kind-star,\s*\.kind-hooray\s*\{([^}]*)\}/);
+  assert.ok(box !== null, 'star and hooray cards share no sizing rule');
+  assert.match(box[1], /container-type:\s*inline-size/, 'the card is not a container its copy can be measured against');
+  for (const sel of ['.kind-star p', '.kind-hooray p']) {
+    const rule = css.match(new RegExp(`\\${sel.replace(' ', '\\s+')}\\s*\\{([^}]*)\\}`));
+    assert.ok(rule !== null, `${sel} has no rule`);
+    const size = rule[1].match(/font-size:\s*([^;]+);/);
+    assert.ok(size !== null, `${sel} declares no font-size`);
+    assert.match(size[1], /cq[wibh]/, `${sel} is sized from something other than its card: ${size[1]}`);
+    // and still capped, so a wide desktop card does not blow the copy up
+    assert.match(size[1], /min\(|clamp\(/, `${sel} has no upper bound: ${size[1]}`);
+  }
+});
+
+test('the burst does not put a filter on the element it clips, which would erase it', () => {
+  // Replicata: look at a star card next to any other card.
+  // Expectata: the same candy lip under it.
+  // Resultata: a flat shape. clip-path is applied after filter, so a
+  // drop-shadow on the clipped element is clipped straight back off; the
+  // declaration painted 1 pixel in 258,064.
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  for (const rule of css.match(/[^{}]*\{[^}]*clip-path[^}]*\}/g) ?? []) {
+    assert.doesNotMatch(rule, /filter\s*:/, `a filter on a clipped element is thrown away: ${rule.slice(0, 48)}`);
+  }
 });
 
 test('the continue button is the only chrome-colored answer and vice versa', () => {
@@ -220,10 +268,12 @@ test('source credit is the tumblr post and the flowchart’s title', () => {
 // node; `answers` are [label, color, next-id] triples in reading order as
 // drawn: boxes whose vertical extents overlap form a row and read left to
 // right, otherwise top to bottom; a Perge answer comes first. A page
-// reference like "(see pg 2)" is copy too, so it stays. Two entries say what
-// the app is rather than what the paper flowchart said, because the human
-// reworded them for the app: 'did-you-actually' drops "on the flowchart" and
-// 'go-through-again' says "this app". Colors are the
+// Some entries say what the app is rather than what the paper flowchart said,
+// because the human reworded them by hand for the app: the "(see pg 2)" and
+// "(see page 2)" references are gone, since an app has no page 2; the
+// flowchart's typos are fixed ("Accommodate", "Look forward:");
+// 'did-you-actually' drops "on the flowchart"; and 'go-through-again' says
+// "this app". Colors are the
 // flowchart's box fills: green, pink, red, cream, peach, purple (INERTIA's
 // orchid), lime (IMPULSE CONTROL's yellow-green), gray.
 const EXPECTED = {
@@ -248,8 +298,8 @@ const EXPECTED = {
     kind: 'step',
     text: 'Why are you having trouble getting started?',
     answers: [
-      ['INERTIA: I want to do it but I can’t stop doing something else (see pg 2)', 'purple', 'interrupt-inertia'],
-      ['IMPULSE CONTROL: I **really** want to do something else specifically (see pg 2)', 'lime', 'resist-impulses'],
+      ['INERTIA: I want to do it but I can’t stop doing something else', 'purple', 'interrupt-inertia'],
+      ['IMPULSE CONTROL: I **really** want to do something else specifically', 'lime', 'resist-impulses'],
       ['MOTIVATION: I don’t want to do it', 'pink', 'ten-minutes'],
       ['??? Not sure why', 'cream', 'mindfulness'],
       ['SENSORY & EMOTIONAL REGULATION\nI feel bad, upset, gross', 'peach', 'wellbeing'],
@@ -277,7 +327,7 @@ const EXPECTED = {
     kind: 'list',
     text: 'MAKE IT MORE TOLERABLE\n'
       + '**Listen** to music or an audiobook\n'
-      + '**Accomodate the task** to make it less bad\n'
+      + '**Accommodate the task** to make it less bad\n'
       + '**Pretend to be excited** about it, **find the fun**\n'
       + '**Decide on a reward** for after\n'
       + '**Change of scenery**\n'
@@ -285,7 +335,7 @@ const EXPECTED = {
       + '**Body double** with a friend',
     answers: [
       ['One of those worked!', 'green', 'hell-yeah'],
-      ['This didn’t help (see pg 2)', 'pink', 'diy-dopamine'],
+      ['This didn’t help', 'pink', 'diy-dopamine'],
     ],
   },
   'mindfulness': {
@@ -302,7 +352,7 @@ const EXPECTED = {
     text: 'WELLBEING\n'
       + 'Are your physical & emotional needs met right now?',
     answers: [
-      ['Needs are met! (see pg 2)', 'green', 'other-reasons'],
+      ['Needs are met!', 'green', 'other-reasons'],
       ['No, I need something. It’s...', 'pink', 'need-kind'],
     ],
   },
@@ -319,7 +369,7 @@ const EXPECTED = {
     text: 'Can the need be met right now, even partially?',
     answers: [
       ['Yes!', 'green', 'dbt-skills'],
-      ['Need can’t be met (see page 2)', 'pink', 'other-reasons'],
+      ['Need can’t be met', 'pink', 'other-reasons'],
     ],
   },
   'need-met-physical': {
@@ -327,7 +377,7 @@ const EXPECTED = {
     text: 'Can the need be met right now, even partially?',
     answers: [
       ['Yes!', 'green', 'attend'],
-      ['Need can’t be met (see page 2)', 'pink', 'other-reasons'],
+      ['Need can’t be met', 'pink', 'other-reasons'],
     ],
   },
   'prioritize': {
@@ -437,7 +487,7 @@ const EXPECTED = {
       + '**Create physical distance** from the thing\n'
       + '**Create a gap.** Wait just 5 minutes before acting.\n'
       + '**Look back:** During those 5 minutes, think about the last time you acted on this impulse. (“Last time I ___, I felt ___ / ____ happened”)\n'
-      + '**Look forward :** “How will I feel if I follow X impulse?” Answer that question for yourself, as well as “How will I feel if I don’t follow X impulse?” (let there be good feelings about that one too!)\n'
+      + '**Look forward:** “How will I feel if I follow X impulse?” Answer that question for yourself, as well as “How will I feel if I don’t follow X impulse?” (let there be good feelings about that one too!)\n'
       + '**Find an out**: add a natural stopping point- drink lots of water so you need to get up to pee, or set a content blocker to start in 15 minutes.\n'
       + '**Plan an interruption** or ask a friend for help interrupting.\n'
       + '**Make it harder** to follow impulse- delete apps, hide things, etc.\n'

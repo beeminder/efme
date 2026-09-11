@@ -1,6 +1,7 @@
 /* style.css — the candy look. One deliberate bright theme, always light. */
 
 :root {
+  --medallion: 28rem;        /* how wide a star card, and its answers, may get */
   --ink: #2a1a4a;
   --grape: #4a1fa8;          /* purple ink: links, markers, focus rings */
   --tangerine: #ffb12e;
@@ -12,7 +13,7 @@
 
 * { box-sizing: border-box; }
 
-html { margin: 0; scroll-behavior: smooth; }
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -26,7 +27,7 @@ body {
 }
 
 /* ---- floating candy blobs behind everything ---- */
-.bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+.bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
 .blob {
   position: absolute; border-radius: 50%; filter: blur(48px); opacity: .55;
   animation: drift 18s ease-in-out infinite alternate;
@@ -49,13 +50,12 @@ body {
   line-height: 1;
   margin: 0;
   letter-spacing: -.02em;
-  background: linear-gradient(180deg, #fff9b0 0%, #ffb12e 46%, #ff4fa3 100%);
+  background: linear-gradient(180deg, #fff9b0 0%, var(--tangerine) 46%, #ff4fa3 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 4px 0 #b3186a) drop-shadow(0 10px 16px rgba(120, 0, 80, .35));
   animation: bob 3.2s ease-in-out infinite;
-  display: block;
   width: max-content;
   margin-inline: auto;
 }
@@ -83,9 +83,13 @@ body {
   padding: 0 .5em;
   margin: 0 -.5em;
 }
-/* Left to the browser this ring is engine-dependent and off-palette; drawn
-   here it traces the hit area, so it also shows how big the target really is. */
-.fn-ref:focus-visible { outline: 3px solid var(--ink); border-radius: 10px; }
+/* One ring for everything focusable, so a reader learns it once. Only the
+   offset varies, and only where the ring has something to clear: the marker's
+   padded hit area, the card's padding, and a star's spikes. */
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.fn-ref:focus-visible { outline-offset: 0; border-radius: 10px; }
+.paper:focus-visible { outline-offset: 6px; }
+.kind-star .paper:focus-visible, .kind-hooray .paper:focus-visible { outline-offset: .9rem; }
 
 .subtitle {
   margin: .7rem auto 0;
@@ -125,15 +129,11 @@ body {
   font-weight: 900;
   text-decoration: none;
 }
-.fn-back:hover { color: var(--berry); }
-.fn-back:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; border-radius: 6px; }
 /* landing on the note lights it up, so a reader who followed the asterisk can
-   see where they arrived even when the note was already on screen */
-#ef-note:target { animation: highlight 2s ease-out both; }
-@keyframes highlight {
-  0%, 45% { background: #ffe6a0; }
-  100% { background: transparent; }
-}
+   see where they arrived even when the note was already on screen. Static, not
+   animated: an animated fade is switched off by the reduced-motion block, and
+   this carries no motion to reduce. It clears when the hash moves on. */
+#ef-note:target { background: #ffe6a0; }
 .gloss { font-weight: 700; }
 .credit-label { font-weight: 900; color: var(--berry); }
 #source-link {
@@ -145,16 +145,12 @@ body {
   text-underline-offset: 3px;
 }
 #source-link:hover { color: var(--grape); }
-#source-link:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; border-radius: 4px; }
-.credit-by { font-weight: 600; }
 .madeby a {
   color: var(--grape);
   font-weight: 800;
-  text-decoration: underline;
   text-underline-offset: 3px;
 }
-.madeby a:hover { color: var(--berry); }
-.madeby a:focus-visible { outline: 3px solid var(--grape); outline-offset: 3px; border-radius: 4px; }
+.fn-back:hover, .madeby a:hover { color: var(--berry); }
 
 /* ---- the card ---- */
 .stage { max-width: 760px; margin: 2.6rem auto 0; padding: 0 1.25rem; }
@@ -163,18 +159,21 @@ body {
   position: relative;
   animation: pop .6s cubic-bezier(.2, 1.6, .4, 1) both;
 }
-/* The visible box lives on .paper, a child, so the starburst halo
-   (.card::before, z-index -1) paints behind it rather than over it. */
+/* One fill for the whole deck: the rounded paper of an ordinary card and the
+   clipped burst of a star card are the same surface. */
+.paper, .kind-star::before, .kind-hooray::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 30%), var(--paper);
+}
+/* The visible box of an ordinary card lives on .paper, a child of .card, so
+   that a star card can swap it for the burst behind without either of them
+   having to fight the other for paint order. */
 .paper {
   position: relative;
   padding: 1.7rem 1.9rem;
   border-radius: 34px;
   border: 6px solid var(--edge);
-  background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 30%), var(--paper);
   box-shadow: 0 12px 0 var(--edge-dark), 0 26px 44px rgba(60, 20, 90, .28);
 }
-.paper:focus { outline: none; }
-.paper:focus-visible { outline: 4px solid var(--ink); outline-offset: 6px; }
 @keyframes pop {
   0% { opacity: 0; transform: scale(.55) rotate(-4deg); }
   60% { opacity: 1; transform: scale(1.06) rotate(1.5deg); }
@@ -183,8 +182,8 @@ body {
 
 .kind-step { --edge: #3fd3ff; --edge-dark: #169fd0; --paper: #e9fbff; }
 .kind-question, .kind-list { --edge: #74b6ff; --edge-dark: #3b86e0; --paper: #edf5ff; }
-.kind-star { --edge: #c3b4ff; --edge-dark: #8f73f0; --paper: #f4f0ff; }
-.kind-hooray { --edge: #ffb12e; --edge-dark: #e8781a; --paper: #fff5d8; }
+.kind-star { --paper: #f4f0ff; }
+.kind-hooray { --paper: #fff5d8; }
 
 /* Starburst for star cards, echoing the flowchart's spiky instruction boxes.
    The card is a square so the 12 spikes stay spikes: a percentage clip on a
@@ -194,9 +193,9 @@ body {
    body wide enough for the longest star copy. 1.1rem of spike stays under
    the stage's side padding so none reaches the edge of a phone screen. */
 .kind-star, .kind-hooray {
-  width: 100%;
-  max-width: 28rem;
+  max-width: var(--medallion);
   aspect-ratio: 1;
+  container-type: inline-size;
   margin: 1.6rem auto;
 }
 .kind-star .paper, .kind-hooray .paper {
@@ -206,16 +205,18 @@ body {
   place-items: center;
   padding: 18%;
   border: 0;
-  border-radius: 0;
   background: none;
   box-shadow: none;
 }
 .kind-star::before, .kind-hooray::before {
   content: '';
   position: absolute;
-  z-index: -1;
-  inset: -1.1rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 30%), var(--paper);
+  inset: -.9rem;   /* under the stage padding even at the breathe peak */
+  /* No lip here, unlike the other cards. It cannot be a filter or a shadow on
+     this element, because clip-path is applied after both and clips them
+     straight back off; and a second copy of the shape dropped behind shows
+     along every diagonal edge of every spike, reading as a misprint. The
+     burst is flat on purpose. */
   clip-path: polygon(
     50.00% 0.00%,
     60.09% 12.33%,
@@ -242,7 +243,6 @@ body {
     25.00% 6.70%,
     39.91% 12.33%
   );
-  filter: drop-shadow(0 10px 0 var(--edge-dark)) drop-shadow(0 22px 36px rgba(60, 20, 90, .28));
   animation: breathe 2.6s ease-in-out infinite alternate;
 }
 .kind-hooray::before { animation-duration: .9s; }
@@ -258,12 +258,17 @@ body {
 .kind-list p { font-size: clamp(1.2rem, 3.2vw, 1.6rem); }
 /* the flowchart sets its five numbered questions heavier than the rest */
 .kind-question p, .kind-list p { font-weight: 700; }
-.kind-star p { color: #3d2a78; }
+/* A star card is a fixed square capped by the viewport, so its copy is sized
+   from the card rather than from the root font: ask for as much as the reader
+   set, take no more than the burst can hold. Sized from the viewport instead,
+   a reader at the 200% text-resize threshold got the message running 409px
+   below the card, over the page and under the buttons. */
+.kind-star p { color: var(--ink); font-size: min(1.95rem, 7.2cqw); }
 .kind-hooray p {
   font-family: var(--display);
-  font-size: clamp(2.2rem, 8vw, 3.4rem);
+  font-size: min(3.4rem, 12cqw);
   line-height: 1.05;
-  background: linear-gradient(180deg, #ff6a2e 0%, #d61e6e 100%);
+  background: linear-gradient(180deg, #f05a1e 0%, #d61e6e 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: wiggle 1.2s ease-in-out infinite;
 }
@@ -274,7 +279,6 @@ body {
 
 .card h2 {
   font-family: var(--display);
-  font-weight: 700;
   font-size: clamp(1.5rem, 4.5vw, 2rem);
   letter-spacing: .05em;
   text-align: center;
@@ -297,7 +301,7 @@ body {
   box-shadow: 0 2px 0 rgba(0, 0, 0, .18);
 }
 .card li:nth-child(4n+1) { --dot: #ff6fb5; --dot-dark: #c62d78; }
-.card li:nth-child(4n+2) { --dot: #ffb12e; --dot-dark: #d97a0c; }
+.card li:nth-child(4n+2) { --dot: var(--tangerine); --dot-dark: #d97a0c; }
 .card li:nth-child(4n+3) { --dot: #8ee83f; --dot-dark: #4fa81d; }
 .card li:nth-child(4n+4) { --dot: #6fd0ff; --dot-dark: #2b8fd0; }
 /* Links to the thing a box names. They open in a new tab, so a reader who
@@ -309,10 +313,6 @@ body {
   border-radius: 4px;
 }
 .card a:hover { color: var(--berry); text-decoration-thickness: 3px; }
-.card a:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
-/* Star cards are a square burst, so a two-word link that wraps leaves the
-   first word hanging on its own line. List cards stay wrap-as-usual. */
-.kind-star a { white-space: nowrap; }
 .card b { font-weight: 900; }
 .card u { text-decoration-color: var(--edge-dark); text-decoration-thickness: 3px; text-underline-offset: 3px; }
 
@@ -322,7 +322,7 @@ body {
   display: grid; place-items: center;
   width: 3rem; height: 3rem; border-radius: 50%;
   font-family: var(--display); font-size: 1.7rem; font-weight: 700; color: #fff;
-  background: radial-gradient(circle at 35% 30%, #7a5cff 0%, #2a1a4a 75%);
+  background: radial-gradient(circle at 35% 30%, #7a5cff 0%, var(--ink) 75%);
   box-shadow: 0 4px 0 #150a30, 0 8px 14px rgba(20, 0, 50, .35), inset 0 2px 2px rgba(255, 255, 255, .45);
   animation: bounce-in .7s cubic-bezier(.2, 1.8, .4, 1) .15s both;
 }
@@ -332,7 +332,10 @@ body {
 }
 
 /* ---- answers ---- */
-.answers { display: grid; gap: .85rem; margin-top: 1.5rem; grid-template-columns: 1fr; }
+.answers { display: grid; gap: .85rem; margin-top: 1.5rem; }
+/* A star card is a fixed-size medallion rather than a full-width card, so the
+   answers under it match its width. */
+.kind-star ~ .answers { max-width: var(--medallion); margin-inline: auto; }
 @media (min-width: 640px) {
   .answers { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 }
@@ -342,10 +345,10 @@ body {
 .answer {
   font: inherit; font-weight: 800;
   font-size: 1.08rem; line-height: 1.28;
-  color: var(--ink); text-align: center; cursor: pointer;
+  color: var(--ink); cursor: pointer;
   padding: 1rem 1.35rem;
   border: 0; border-radius: 999px;
-  background: linear-gradient(180deg, var(--c-light) 0%, var(--c) 58%, var(--c) 100%);
+  background: linear-gradient(180deg, var(--c-light) 0%, var(--c) 58%);
   box-shadow:
     0 6px 0 var(--c-dark),
     0 12px 20px rgba(60, 20, 90, .22),
@@ -360,7 +363,6 @@ body {
   transform: translateY(4px);
   box-shadow: 0 1px 0 var(--c-dark), 0 4px 8px rgba(60, 20, 90, .2), inset 0 -3px 0 rgba(0, 0, 0, .07);
 }
-.answer:focus-visible { outline: 4px solid var(--ink); outline-offset: 3px; }
 /* While a button waits its turn (backwards fill of this first frame) it is
    hidden, and a hidden element cannot be clicked, so the second click of a
    hasty double click lands on nothing instead of skipping a box. Once the
@@ -371,7 +373,7 @@ body {
 }
 
 .color-green { --c: #9cf287; --c-light: #ddffd2; --c-dark: #4dbd38; }
-.color-pink { --c: #ff9fc9; --c-light: #ffd9ea; --c-dark: #e2568f; }
+.color-pink { --c: #ff9fc9; --c-light: #ffd9ea; --c-dark: var(--raspberry); }
 .color-red { --c: #ff6b7a; --c-light: #ffb8bf; --c-dark: #c42a3d; }
 .color-cream { --c: #fff0a3; --c-light: #fffbe2; --c-dark: #dfbf3f; }
 .color-peach { --c: #ffc6a3; --c-light: #ffe8dc; --c-dark: #ef874f; }
@@ -395,7 +397,6 @@ body {
 .control:hover { transform: translateY(-2px); }
 .control:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(120, 60, 160, .25); }
 .control:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-.control:focus-visible { outline: 4px solid var(--grape); outline-offset: 2px; }
 
 /* ---- confetti, animated only under the Hell-yeah card ---- */
 .confetti { position: fixed; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; }

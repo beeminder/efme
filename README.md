@@ -1,6 +1,6 @@
 EF Me  
 (EF = Executive Function)  
-A tool to overcome executive dysfunction  
+A tool to overcome (instances of) executive dysfunction  
 
 
 

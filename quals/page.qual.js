@@ -20,7 +20,7 @@ const [NAME, GLOSS, SUBTITLE] = readme.split('\n').slice(0, 3).map(l => l.trimEn
 // of the README. They live here now because this is the spec: changing what
 // the page claims to be means changing this qual on purpose.
 const boilerplate = {
-  TITLE: 'EF Me: A tool to overcome executive dysfunction',
+  TITLE: 'EF Me: A tool to overcome (instances of) executive dysfunction',
   DESCRIPTION: 'Based on a flowchart by jackalwedding on Tumblr.',
   URL: 'https://beeminder.github.io/efme',
   OPTAUTHORHANDLE: 'bmndr',
@@ -46,7 +46,7 @@ const TERM = GLOSS.match(/\(([^\s=]+) =/)[1];
 const DEFINITION = GLOSS.match(/= ([^)]+)\)/)[1];
 
 test('README.md still opens with the three title lines the page shows', () => {
-  assert.deepEqual([NAME, GLOSS, SUBTITLE], ['EF Me', '(EF = Executive Function)', 'A tool to overcome executive dysfunction']);
+  assert.deepEqual([NAME, GLOSS, SUBTITLE], ['EF Me', '(EF = Executive Function)', 'A tool to overcome (instances of) executive dysfunction']);
 });
 
 test('the page shows the human’s copy character for character', () => {
@@ -71,12 +71,19 @@ test('the title’s footnote marker and the note it explains are a matching pair
   assert.equal(shown(/<p class="footnote" id="ef-note">([\s\S]*?)<\/p>/), `${MARKER} ${DEFINITION}`);
 });
 
-test('both footnote links say what they are for, since an asterisk alone reads as nothing', () => {
-  for (const re of [/<a class="fn-ref"([^>]*)>/, /<a class="fn-back"([^>]*)>/]) {
-    assert.match(tag(re), /aria-label="[^"]+"/);
-  }
-  // the asterisk itself is decoration once the link is labelled
-  assert.match(tag(/<a class="fn-ref"[^>]*>([\s\S]*?)<\/a>/), /aria-hidden="true"/);
+test('the heading announces as the human’s name, not as the footnote’s label', () => {
+  // Replicata: read the h1's accessible name, which is built from its contents.
+  // Expectata: "EF* Me".
+  // Resultata (before this qual): "EFFootnote: what EF stands for Me", because
+  // anything spoken inside a heading joins that heading's own name.
+  const h1 = tag(/<h1 class="title">([\s\S]*?)<\/h1>/);
+  assert.doesNotMatch(h1, /aria-label=/, 'a label inside the heading joins the heading’s own name');
+  assert.doesNotMatch(h1, /aria-hidden=/, 'hiding the asterisk leaves the link with no name at all');
+  assert.equal(shown(/<h1 class="title">([\s\S]*?)<\/h1>/), NAME.replace(TERM, TERM + MARKER));
+});
+
+test('the link back up from the note still says what it is for', () => {
+  assert.match(tag(/<a class="fn-back"([^>]*)>/), /aria-label="[^"]+"/);
 });
 
 test('title and description are the README’s, in every place they are repeated', () => {
