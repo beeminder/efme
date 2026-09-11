@@ -96,8 +96,8 @@ export const FLOWCHART = {
       + '<li><b>Pretend to be excited</b> about it, <b>find the fun</b></li>'
       + '<li><b>Decide on a reward</b> for after</li>'
       + '<li><b>Change of scenery</b></li>'
-      + '<li><b>Wear the “Scientist Hat”</b>- they do this task!</li>'
-      + '<li><b><a href="https://health.clevelandclinic.org/body-doubling-for-adhd" target="_blank" rel="noopener">Body double</a></b> with a friend</li>'
+      + '<li><b>Wear the “Scientist Hat”</b> &mdash; they do this task!</li>'
+      + '<li><b><a href="https://health.clevelandclinic.org/body-doubling-for-adhd" target="_blank" rel="noopener">Body double</a></b> with a friend or via <a href="https://blog.beeminder.com/focusmate" target="_blank" rel="noopener">Focusmate</a></li>'
       + '</ul>',
     answers: [
       { label: 'One of those worked!', color: 'green', next: 'hell-yeah' },

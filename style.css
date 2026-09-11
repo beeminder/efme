@@ -22,6 +22,12 @@ body {
   font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
   font-weight: 600;
   color: var(--ink);
+  /* No single word may push the page sideways. At a large font on a narrow
+     screen the longest word in a list card, and in an answer button, was wider
+     than the space for it. Not break-word: the bullets and the buttons are
+     grid items, and only "anywhere" makes a long word stop setting the
+     smallest width such an item will accept. */
+  overflow-wrap: anywhere;
   overflow-x: hidden;
   padding-bottom: 4rem;
 }
@@ -46,7 +52,11 @@ body {
 .title {
   font-family: var(--display);
   font-weight: 700;
-  font-size: clamp(3.4rem, 11vw, 5.8rem);
+  /* The floor is in rem so the wordmark grows with the reader's font, and the
+     26vw cap is so it cannot grow past the screen holding it: at 320px with
+     the font set to 200% it was overrunning by 32px and the logo was chopped
+     at both edges. The cap binds only there; everywhere else the clamp wins. */
+  font-size: min(clamp(3.4rem, 11vw, 5.8rem), 26vw);
   line-height: 1;
   margin: 0;
   letter-spacing: -.02em;
@@ -383,7 +393,9 @@ body {
 .color-chrome { --c: #fff; --c-light: #fff; --c-dark: var(--lilac); color: var(--grape); }
 
 /* ---- back / restart ---- */
-.controls { display: flex; justify-content: center; gap: .8rem; margin: 1.6rem auto 0; padding: 0 1rem; }
+/* wrap, because at a large font the two buttons are wider than a narrow
+   screen and a centred flex row overflows both edges rather than breaking */
+.controls { display: flex; flex-wrap: wrap; justify-content: center; gap: .8rem; margin: 1.6rem auto 0; padding: 0 1rem; }
 .control {
   font: inherit; font-weight: 900; font-size: .98rem;
   color: var(--ink); cursor: pointer;

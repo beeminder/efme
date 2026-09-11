@@ -47,6 +47,31 @@ test('the marker never suppresses its focus outline', () => {
   }
 });
 
+test('nothing that sets the page’s width is measured only in the reader’s font size', () => {
+  // Replicata: a 320px viewport, the narrowest WCAG asks a page to reflow in,
+  // with the browser's default font set to 32px, the 200% resize threshold.
+  // Expectata: the page reflows, everything on screen, no sideways scrolling.
+  // Resultata (before this qual): the wordmark overran the viewport by 32px
+  // and the first answer by 49px, so the logo was chopped at both edges, the
+  // step badge was half off screen, and a card had to be scrolled to.
+  //
+  // Both were sized only in rem, which grows with the reader's font while the
+  // viewport does not. Each now also has a bound the viewport can enforce.
+  const title = css.match(/\.title \{([\s\S]*?)\}/);
+  assert.ok(title !== null, 'style.css has no .title rule');
+  const size = title[1].match(/font-size:\s*([^;]+);/)[1];
+  assert.match(size, /min\(/, `the wordmark has no cap the viewport can enforce: ${size}`);
+  assert.match(size, /\dv[wi]/, `the wordmark's cap is not viewport-relative: ${size}`);
+  const body = css.match(/\nbody \{([\s\S]*?)\}/);
+  assert.ok(body !== null, 'style.css has no body rule');
+  assert.match(body[1], /overflow-wrap:\s*anywhere/,
+    'a long word anywhere on the page can still set the smallest width a card or button will accept, and push the page sideways');
+  const controls = css.match(/\.controls \{([^}]*)\}/);
+  assert.ok(controls !== null, 'style.css has no .controls rule');
+  assert.match(controls[1], /flex-wrap:\s*wrap/,
+    'the Back and Start over buttons cannot break onto two lines, so at a large font they overflow both edges');
+});
+
 test('the reduced-motion block still turns every animation off', () => {
   const block = css.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\}/);
   assert.ok(block !== null, 'style.css has no prefers-reduced-motion block');

@@ -2,10 +2,7 @@ EF Me
 (EF = Executive Function)  
 A tool to overcome (instances of) executive dysfunction  
 
-
-
-
-Desiderata:
+Original desiderata:
 
 1. Character-by-character fidelity to the flowchart for all UI copy.
 2. A Candy Crush aesthetic -- not anything about the game itself, just in terms of the presentation. The idea is to captivate even the most ADHD-brained person.
