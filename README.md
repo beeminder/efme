@@ -8,18 +8,34 @@ Original desiderata:
 2. A Candy Crush aesthetic -- not anything about the game itself, just in terms of the presentation. The idea is to captivate even the most ADHD-brained person.
 3. Prominently credit the source (jackalwedding on Tumblr)
 
-I'm not sure yet if it makes sense to drop the numbered steps.
-Eg, when we hit "Great job! Move to step 2." that could just be "Great Job!" with a button that says:
-> Go to "Can you start the task?"
-Another example: "Do DBT worksheet on willfulness. Go to step 4." could become:
-> Do DBT worksheet on willfulness
-> [button1] I did it
-> [button2] I don't want to!!
-and then if you click button 1 you get sent to "Are there other reasons you can't start the task?" (previously known as step 4) and if you click button 2 you get:
-> Ok, just go to "Are there other reasons you can't start the task?"
-> [button3] No!!!
-and when you click that, another button appears below it:
-> [button4] Fine.
+
+### Possible streamlining
+
+I'm not sure yet if it makes sense to drop the numbered steps.  
+Eg, when we hit "Great job! Move to step 2." that could just be "Great Job!" with a button that says:  
+> Go to "Can you start the task?"  
+Another example: "Do DBT worksheet on willfulness. Go to step 4." could become:  
+> Do DBT worksheet on willfulness  
+> [button1] I did it  
+> [button2] I don't want to!!  
+and then if you click button 1 you get sent to "Are there other reasons you can't start the task?" (previously known as step 4) and if you click button 2 you get:  
+> Ok, just go to "Are there other reasons you can't start the task?"  
+> [button3] No!!!  
+and when you click that, another button appears below it:  
+> [button4] Fine.  
+
+A maybe easier thing:
+
+1. Know what you need to do? --> Yes
+2. Can you start? --> No
+3. Why are you having trouble getting started? --> MOTIVATION: I don't want to do it
+4. Can you do it for just 10 minutes? --> That still sounds bad
+5. Why? --> I'm worried I'll fail.
+6. "Go to Step 4."
+
+Is there any value in seeing nothing but "Go to step 4" and having nothing to click but "OK Go"? I'm not sure.
+So far we're erring on the side of faithfulness to the flowchart.
+
 
 Bug [fixed]:
 
@@ -29,11 +45,11 @@ Bug [fixed]:
 4. MINDFULNESS --> Still don't know
 5. WELLBEING --> No
 6. No, I need something --> EMOTIONAL
-7. Can the need be met? --> Yes
+7. Can the need be met? --> Yes  
 Unreadable page.
 
 
-Bug in the flowchart itself:
+Bug in the flowchart itself [fixed]:
 
 1. Know what you need to do? --> Yes
 2. Can you start? --> No
@@ -45,3 +61,4 @@ Bug in the flowchart itself:
 8. Did you *actually* follow/try the suggestions?
 
 Being asked the question in step 8 there doesn't make sense since the user hasn't been offered suggestions in this path of the flowchart.
+

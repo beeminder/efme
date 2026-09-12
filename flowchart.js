@@ -30,6 +30,8 @@
 //
 // Every string below was copied character for character from the flowchart,
 // down to the typos (which dreev then fixed with his bare hands).
+// Every arrow too, except three into Step 4 that land on DIY DOPAMINE
+// instead; they are marked where they are, under 'wellbeing'.
 
 //export const SOURCE_URL = 'https://www.tumblr.com/jackalwedding/774031119836397568/if-you-have-memory-problems-brain-fog-or';
 export const SOURCE_URL = 'https://www.tumblr.com/jackalwedding/826687364580687872/reblog-by-jackalwedding-1-image';
@@ -117,7 +119,15 @@ export const FLOWCHART = {
     kind: 'list',
     html: '<h2>WELLBEING</h2><p>Are your physical &amp; emotional needs met right now?</p>',
     answers: [
-      { label: 'Needs are met!', color: 'green', next: 'other-reasons' },
+      // The flowchart draws this arrow, and the two "Need can’t be met"
+      // arrows below, straight into Step 4, whose "Nope" then asks "Did you
+      // actually follow/try the suggestions?" of a reader who was offered
+      // none: this is the only branch of Step 3 that suggests nothing. Going
+      // through DIY DOPAMINE first, whose "It isn’t helping" already leads to
+      // Step 4, puts a suggestion in front of the question. These three are
+      // the only edges that are not drawn arrows; see README.md, "Bug in the
+      // flowchart itself".
+      { label: 'Needs are met!', color: 'green', next: 'diy-dopamine' },
       { label: 'No, I need something. It’s...', color: 'pink', next: 'need-kind' },
     ],
   },
@@ -134,7 +144,8 @@ export const FLOWCHART = {
     html: '<p>Can the need be met right now, even partially?</p>',
     answers: [
       { label: 'Yes!', color: 'green', next: 'dbt-skills' },
-      { label: 'Need can’t be met', color: 'pink', next: 'other-reasons' },
+      // drawn into Step 4; rerouted, see 'wellbeing'
+      { label: 'Need can’t be met', color: 'pink', next: 'diy-dopamine' },
     ],
   },
   'need-met-physical': {
@@ -142,7 +153,8 @@ export const FLOWCHART = {
     html: '<p>Can the need be met right now, even partially?</p>',
     answers: [
       { label: 'Yes!', color: 'green', next: 'attend' },
-      { label: 'Need can’t be met', color: 'pink', next: 'other-reasons' },
+      // drawn into Step 4; rerouted, see 'wellbeing'
+      { label: 'Need can’t be met', color: 'pink', next: 'diy-dopamine' },
     ],
   },
   'prioritize': {

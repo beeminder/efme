@@ -4,6 +4,9 @@
 // user-visible string must match the flowchart character for character,
 // every emphasis span must start and end where the flowchart's does, and
 // every arrow in the flowchart must be an edge in the graph.
+// The one exception: three arrows into Step 4 land on DIY DOPAMINE instead,
+// so that nobody is asked about suggestions they were never offered; see the
+// qual of that name and the note above EXPECTED.
 //
 // Vocabulary:
 //   node     = one box or star in the flowchart, keyed by a short id
@@ -66,6 +69,27 @@ test('every node is reachable from START', () => {
     }
   }
   assert.deepEqual([...ids].sort(), [...seen].sort());
+});
+
+// Cards that ask the reader to try something: the bulleted lists, plus the two
+// one-liners "Can you do it for just 10 minutes?" and MINDFULNESS's "Take 5
+// minutes to sit quietly". "Did you actually follow/try the suggestions?"
+// asks about these.
+const suggests = id => FLOWCHART[id].html.includes('<ul>') || ['ten-minutes', 'mindfulness'].includes(id);
+
+test('nobody is asked whether they tried the suggestions before being offered any', () => {
+  // Replicata (README.md, "Bug in the flowchart itself"): Yes! / No, that’s
+  // why I’m using this / SENSORY & EMOTIONAL REGULATION / No, I need
+  // something / PHYSICAL (or EMOTIONAL, same thing) / Need can’t be met / Nope.
+  // Expectata: Step 5, since nothing was suggested that could have been skipped.
+  // Resultata: "Did you actually follow/try the suggestions?", none offered.
+  // The flowchart draws it that way; the app departs from it on purpose.
+  const bare = [];
+  (function walk(id, path) {
+    if (id === 'did-you-actually') { if (!path.some(suggests)) bare.push(path.join(' > ')); return; }
+    for (const a of FLOWCHART[id].answers) if (!path.includes(a.next)) walk(a.next, [...path, a.next]);
+  })(START, [START]);
+  assert.deepEqual(bare, []);
 });
 
 test('kinds and colors come from the vocabularies', () => {
@@ -307,6 +331,12 @@ test('source credit is the tumblr post and the flowchart’s title', () => {
 // "this app". Colors are the
 // flowchart's box fills: green, pink, red, cream, peach, purple (INERTIA's
 // orchid), lime (IMPULSE CONTROL's yellow-green), gray.
+// Three arrows go where the app sends them rather than where the flowchart
+// draws them: "Needs are met!" and both "Need can’t be met" lead to
+// 'diy-dopamine', not 'other-reasons' (Step 4), so that the guard question
+// after Step 4 always follows a card that suggested something. That is the
+// fix for the flowchart's own bug recorded in README.md, and the only edges
+// in the graph that are not drawn arrows.
 const EXPECTED = {
   'know': {
     kind: 'step',
@@ -383,7 +413,7 @@ const EXPECTED = {
     text: 'WELLBEING\n'
       + 'Are your physical & emotional needs met right now?',
     answers: [
-      ['Needs are met!', 'green', 'other-reasons'],
+      ['Needs are met!', 'green', 'diy-dopamine'],
       ['No, I need something. It’s...', 'pink', 'need-kind'],
     ],
   },
@@ -400,7 +430,7 @@ const EXPECTED = {
     text: 'Can the need be met right now, even partially?',
     answers: [
       ['Yes!', 'green', 'dbt-skills'],
-      ['Need can’t be met', 'pink', 'other-reasons'],
+      ['Need can’t be met', 'pink', 'diy-dopamine'],
     ],
   },
   'need-met-physical': {
@@ -408,7 +438,7 @@ const EXPECTED = {
     text: 'Can the need be met right now, even partially?',
     answers: [
       ['Yes!', 'green', 'attend'],
-      ['Need can’t be met', 'pink', 'other-reasons'],
+      ['Need can’t be met', 'pink', 'diy-dopamine'],
     ],
   },
   'prioritize': {
